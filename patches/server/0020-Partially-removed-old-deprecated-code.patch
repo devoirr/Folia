@@ -1,0 +1,373 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: devoirr <138160506+devoirr@users.noreply.github.com>
+Date: Thu, 25 Apr 2024 10:24:58 +0300
+Subject: [PATCH] Partially removed old deprecated code
+
+
+diff --git a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java b/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java
+index a2c057d92ea34368c7efc538b6e5b15ef342c54e..cab29a4ff2602c36eb9dffc15209360b8a7726e7 100644
+--- a/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java
++++ b/src/main/java/io/papermc/paper/attribute/UnmodifiableAttributeInstance.java
+@@ -4,6 +4,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+ import org.bukkit.attribute.Attribute;
+ import org.bukkit.attribute.AttributeModifier;
+ import org.bukkit.craftbukkit.attribute.CraftAttributeInstance;
++import org.jetbrains.annotations.NotNull;
+ 
+ import java.util.UUID;
+ import java.util.Collection;
+@@ -20,22 +21,22 @@ public class UnmodifiableAttributeInstance extends CraftAttributeInstance {
+     }
+ 
+     @Override
+-    public void removeModifier(UUID uuid) {
++    public void removeModifier(@NotNull UUID uuid) {
+         throw new UnsupportedOperationException("Cannot modify default attributes");
+     }
+ 
+     @Override
+-    public void addModifier(AttributeModifier modifier) {
++    public void addModifier(@NotNull AttributeModifier modifier) {
+         throw new UnsupportedOperationException("Cannot modify default attributes");
+     }
+ 
+     @Override
+-    public void addTransientModifier(AttributeModifier modifier) {
++    public void addTransientModifier(@NotNull AttributeModifier modifier) {
+         throw new UnsupportedOperationException("Cannot modify default attributes");
+     }
+ 
+     @Override
+-    public void removeModifier(AttributeModifier modifier) {
++    public void removeModifier(@NotNull AttributeModifier modifier) {
+         throw new UnsupportedOperationException("Cannot modify default attributes");
+     }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
+index 8dfaca2efa0b0bdc97b75aaa83158a2e46361e4e..a08cf727825037e79ae3d4e04032679bee82abc5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
++++ b/src/main/java/org/bukkit/craftbukkit/advancement/CraftAdvancement.java
+@@ -6,6 +6,7 @@ import net.minecraft.advancements.AdvancementHolder;
+ import org.bukkit.NamespacedKey;
+ import org.bukkit.advancement.AdvancementDisplay;
+ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
+ 
+@@ -25,7 +26,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
+     }
+ 
+     @Override
+-    public Collection<String> getCriteria() {
++    public @NotNull Collection<String> getCriteria() {
+         return Collections.unmodifiableCollection(this.handle.value().criteria().keySet());
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
+index 971d9a6a64d4d93950441e36aa41522c6b145ebb..961f84fb26d486bd2845a620dc6070a6093b3666 100644
+--- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
++++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
+@@ -8,6 +8,7 @@ import org.bukkit.attribute.Attribute;
+ import org.bukkit.attribute.AttributeInstance;
+ import org.bukkit.attribute.AttributeModifier;
+ import org.bukkit.inventory.EquipmentSlot;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftAttributeInstance implements AttributeInstance {
+ 
+@@ -20,7 +21,7 @@ public class CraftAttributeInstance implements AttributeInstance {
+     }
+ 
+     @Override
+-    public Attribute getAttribute() {
++    public @NotNull Attribute getAttribute() {
+         return this.attribute;
+     }
+ 
+@@ -35,7 +36,7 @@ public class CraftAttributeInstance implements AttributeInstance {
+     }
+ 
+     @Override
+-    public Collection<AttributeModifier> getModifiers() {
++    public @NotNull Collection<AttributeModifier> getModifiers() {
+         List<AttributeModifier> result = new ArrayList<AttributeModifier>();
+         for (net.minecraft.world.entity.ai.attributes.AttributeModifier nms : this.handle.getModifiers()) {
+             result.add(CraftAttributeInstance.convert(nms));
+@@ -46,35 +47,35 @@ public class CraftAttributeInstance implements AttributeInstance {
+ 
+     // Paper start
+     @Override
+-    public AttributeModifier getModifier(java.util.UUID uuid) {
++    public AttributeModifier getModifier(java.util.@NotNull UUID uuid) {
+         Preconditions.checkArgument(uuid != null, "UUID cannot be null");
+         net.minecraft.world.entity.ai.attributes.AttributeModifier modifier = this.handle.getModifier(uuid);
+         return modifier == null ? null : CraftAttributeInstance.convert(modifier);
+     }
+ 
+     @Override
+-    public void removeModifier(java.util.UUID uuid) {
++    public void removeModifier(java.util.@NotNull UUID uuid) {
+         Preconditions.checkArgument(uuid != null, "UUID cannot be null");
+         this.handle.removeModifier(uuid);
+     }
+     // Paper end
+ 
+     @Override
+-    public void addModifier(AttributeModifier modifier) {
++    public void addModifier(@NotNull AttributeModifier modifier) {
+         Preconditions.checkArgument(modifier != null, "modifier");
+         this.handle.addPermanentModifier(CraftAttributeInstance.convert(modifier));
+     }
+ 
+     // Paper start - Transient modifier API
+     @Override
+-    public void addTransientModifier(AttributeModifier modifier) {
++    public void addTransientModifier(@NotNull AttributeModifier modifier) {
+         Preconditions.checkArgument(modifier != null, "modifier");
+         this.handle.addTransientModifier(CraftAttributeInstance.convert(modifier));
+     }
+     // Paper end
+ 
+     @Override
+-    public void removeModifier(AttributeModifier modifier) {
++    public void removeModifier(@NotNull AttributeModifier modifier) {
+         Preconditions.checkArgument(modifier != null, "modifier");
+         this.handle.removeModifier(CraftAttributeInstance.convert(modifier));
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
+index 8a678df56fcf30535957e111d81ad07be5b501ec..4070670ea936ac0df07322eb1a6a903947aedd8e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
++++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
+@@ -5,6 +5,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
+ import org.bukkit.attribute.Attributable;
+ import org.bukkit.attribute.Attribute;
+ import org.bukkit.attribute.AttributeInstance;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftAttributeMap implements Attributable {
+ 
+@@ -29,7 +30,7 @@ public class CraftAttributeMap implements Attributable {
+     }
+ 
+     @Override
+-    public AttributeInstance getAttribute(Attribute attribute) {
++    public AttributeInstance getAttribute(@NotNull Attribute attribute) {
+         Preconditions.checkArgument(attribute != null, "attribute");
+         net.minecraft.world.entity.ai.attributes.AttributeInstance nms = this.handle.getInstance(CraftAttribute.bukkitToMinecraft(attribute));
+ 
+@@ -37,7 +38,7 @@ public class CraftAttributeMap implements Attributable {
+     }
+     // Paper start - living entity allow attribute registration
+     @Override
+-    public void registerAttribute(Attribute attribute) {
++    public void registerAttribute(@NotNull Attribute attribute) {
+         Preconditions.checkArgument(attribute != null, "attribute");
+         handle.registerAttribute(CraftAttribute.bukkitToMinecraft(attribute));
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java b/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
+index a2e195f6f1d8b92e800ae3491f011ad07c984c44..c83cc732ef027055265624a3af3f99bec768b9de 100644
+--- a/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
++++ b/src/main/java/org/bukkit/craftbukkit/boss/CraftBossBar.java
+@@ -18,6 +18,7 @@ import org.bukkit.boss.BossBar;
+ import org.bukkit.craftbukkit.entity.CraftPlayer;
+ import org.bukkit.craftbukkit.util.CraftChatMessage;
+ import org.bukkit.entity.Player;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftBossBar implements BossBar {
+ 
+@@ -96,7 +97,7 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public String getTitle() {
++    public @NotNull String getTitle() {
+         return CraftChatMessage.fromComponent(this.handle.name);
+     }
+ 
+@@ -107,29 +108,29 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public BarColor getColor() {
++    public @NotNull BarColor getColor() {
+         return this.convertColor(this.handle.color);
+     }
+ 
+     @Override
+-    public void setColor(BarColor color) {
++    public void setColor(@NotNull BarColor color) {
+         this.handle.color = this.convertColor(color);
+         this.handle.broadcast(ClientboundBossEventPacket::createUpdateStylePacket);
+     }
+ 
+     @Override
+-    public BarStyle getStyle() {
++    public @NotNull BarStyle getStyle() {
+         return this.convertStyle(this.handle.overlay);
+     }
+ 
+     @Override
+-    public void setStyle(BarStyle style) {
++    public void setStyle(@NotNull BarStyle style) {
+         this.handle.overlay = this.convertStyle(style);
+         this.handle.broadcast(ClientboundBossEventPacket::createUpdateStylePacket);
+     }
+ 
+     @Override
+-    public void addFlag(BarFlag flag) {
++    public void addFlag(@NotNull BarFlag flag) {
+         FlagContainer flagContainer = this.flags.get(flag);
+         if (flagContainer != null) {
+             flagContainer.set.accept(true);
+@@ -137,7 +138,7 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public void removeFlag(BarFlag flag) {
++    public void removeFlag(@NotNull BarFlag flag) {
+         FlagContainer flagContainer = this.flags.get(flag);
+         if (flagContainer != null) {
+             flagContainer.set.accept(false);
+@@ -145,7 +146,7 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public boolean hasFlag(BarFlag flag) {
++    public boolean hasFlag(@NotNull BarFlag flag) {
+         FlagContainer flagContainer = this.flags.get(flag);
+         if (flagContainer != null) {
+             return flagContainer.get.get();
+@@ -165,7 +166,7 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public void addPlayer(Player player) {
++    public void addPlayer(@NotNull Player player) {
+         Preconditions.checkArgument(player != null, "player == null");
+         Preconditions.checkArgument(((CraftPlayer) player).getHandle().connection != null, "player is not fully connected (wait for PlayerJoinEvent)");
+ 
+@@ -173,14 +174,14 @@ public class CraftBossBar implements BossBar {
+     }
+ 
+     @Override
+-    public void removePlayer(Player player) {
++    public void removePlayer(@NotNull Player player) {
+         Preconditions.checkArgument(player != null, "player == null");
+ 
+         this.handle.removePlayer(((CraftPlayer) player).getHandle());
+     }
+ 
+     @Override
+-    public List<Player> getPlayers() {
++    public @NotNull List<Player> getPlayers() {
+         ImmutableList.Builder<Player> players = ImmutableList.builder();
+         for (ServerPlayer p : this.handle.getPlayers()) {
+             players.add(p.getBukkitEntity());
+diff --git a/src/main/java/org/bukkit/craftbukkit/boss/CraftDragonBattle.java b/src/main/java/org/bukkit/craftbukkit/boss/CraftDragonBattle.java
+index 6bfabb38b51115beb2a65a165f235347838b6006..5aa807d927b89a0052bc7af005b8ff9f2ba96b97 100644
+--- a/src/main/java/org/bukkit/craftbukkit/boss/CraftDragonBattle.java
++++ b/src/main/java/org/bukkit/craftbukkit/boss/CraftDragonBattle.java
+@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.entity.CraftEnderCrystal;
+ import org.bukkit.craftbukkit.util.CraftLocation;
+ import org.bukkit.entity.EnderCrystal;
+ import org.bukkit.entity.EnderDragon;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftDragonBattle implements DragonBattle {
+ 
+@@ -34,7 +35,7 @@ public class CraftDragonBattle implements DragonBattle {
+     }
+ 
+     @Override
+-    public BossBar getBossBar() {
++    public @NotNull BossBar getBossBar() {
+         return new CraftBossBar(this.handle.dragonEvent);
+     }
+ 
+@@ -99,7 +100,7 @@ public class CraftDragonBattle implements DragonBattle {
+     }
+ 
+     @Override
+-    public RespawnPhase getRespawnPhase() {
++    public @NotNull RespawnPhase getRespawnPhase() {
+         return this.toBukkitRespawnPhase(this.handle.respawnStage);
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
+index b5e325a7b2d3f49299b35e233ed6539b5bfc3465..7528726c039fbc9b6e4e27085191541e929130e7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
+@@ -4,6 +4,7 @@ import java.net.SocketAddress;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.rcon.RconConsoleSource;
+ import org.bukkit.command.RemoteConsoleCommandSender;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftRemoteConsoleCommandSender extends ServerCommandSender implements RemoteConsoleCommandSender {
+ 
+@@ -18,7 +19,7 @@ public class CraftRemoteConsoleCommandSender extends ServerCommandSender impleme
+     }
+ 
+     @Override
+-    public SocketAddress getAddress() {
++    public @NotNull SocketAddress getAddress() {
+        return this.listener.socketAddress;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
+index 3e7d14564f11a3ed0b0766444e9d681804597e9a..8fad4c9ab4dc9a8e8efbe14b688e9c7712eaaeb4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
+@@ -10,6 +10,7 @@ import org.bukkit.permissions.Permission;
+ import org.bukkit.permissions.PermissionAttachment;
+ import org.bukkit.permissions.PermissionAttachmentInfo;
+ import org.bukkit.plugin.Plugin;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
+ 
+@@ -28,12 +29,12 @@ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
+     }
+ 
+     @Override
+-    public CommandSender getCaller() {
++    public @NotNull CommandSender getCaller() {
+         return this.caller;
+     }
+ 
+     @Override
+-    public CommandSender getCallee() {
++    public @NotNull CommandSender getCallee() {
+         return this.callee;
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index ee1d3f33cf5f3cfc7909dbc33178df69bd656ab8..e70197f9d71e1c6b503089ef3e73681bb1006230 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -83,6 +83,7 @@ import org.bukkit.potion.PotionType;
+ import org.bukkit.util.BlockIterator;
+ import org.bukkit.util.RayTraceResult;
+ import org.bukkit.util.Vector;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     private CraftEntityEquipment equipment;
+@@ -829,13 +830,13 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     }
+ 
+     @Override
+-    public AttributeInstance getAttribute(Attribute attribute) {
++    public AttributeInstance getAttribute(@NotNull Attribute attribute) {
+         return this.getHandle().craftAttributes.getAttribute(attribute);
+     }
+ 
+     // Paper start - living entity allow attribute registration
+     @Override
+-    public void registerAttribute(Attribute attribute) {
++    public void registerAttribute(@NotNull Attribute attribute) {
+         getHandle().craftAttributes.registerAttribute(attribute);
+     }
+     // Paper end - living entity allow attribute registration

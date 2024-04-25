@@ -1,0 +1,913 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: devoirr <138160506+devoirr@users.noreply.github.com>
+Date: Thu, 25 Apr 2024 11:19:22 +0300
+Subject: [PATCH] Removed deprecated API from Player class
+
+
+diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
+index 772e3a864e0e70288a1c010d8bbb809d34d16a41..b1a8d33ebb987ef6a9443b56aa1bcb131fbc7c7e 100644
+--- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
++++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
+@@ -372,7 +372,7 @@ public final class ChatProcessor {
+         if (((org.bukkit.craftbukkit.CraftWorld) player.getWorld()).getHandle().paperConfig().scoreboards.useVanillaWorldScoreboardNameColoring) {
+             return legacySection().serialize(player.teamDisplayName()) + ChatFormatting.RESET;
+         }
+-        return player.getDisplayName();
++        return player.getName();
+     }
+ 
+     static Component displayName(final CraftPlayer player) {
+diff --git a/src/main/java/io/papermc/paper/command/subcommands/DumpItemCommand.java b/src/main/java/io/papermc/paper/command/subcommands/DumpItemCommand.java
+index 5f0b0fe73a47e6a5ca8706f11e78b4b08e6ccd9a..e880b6d35fc9c2d4e1312cfdc89a3062cca375d2 100644
+--- a/src/main/java/io/papermc/paper/command/subcommands/DumpItemCommand.java
++++ b/src/main/java/io/papermc/paper/command/subcommands/DumpItemCommand.java
+@@ -36,7 +36,7 @@ public final class DumpItemCommand implements PaperSubcommand {
+             sender.sendMessage("Only players can use this command");
+             return;
+         }
+-        final ItemStack itemStack = CraftItemStack.asNMSCopy(((CraftPlayer) sender).getItemInHand());
++        final ItemStack itemStack = CraftItemStack.asNMSCopy(((CraftPlayer) sender).getInventory().getItemInMainHand());
+         final @Nullable CompoundTag tag = itemStack.getTag();
+         final @Nullable Component nbtComponent = tag == null ? null : PaperAdventure.asAdventure(net.minecraft.nbt.NbtUtils.toPrettyComponent(tag));
+         final String itemId = Objects.requireNonNull(((CraftWorld) ((CraftPlayer) sender).getWorld()).getHandle().registryAccess()
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 954809d8997750959541e6462668f17efd0b0f70..6b3269ddc0bffe149cf4a0775afb23de12416ecb 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2360,90 +2360,16 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+         }
+         OutgoingChatMessage outgoing = OutgoingChatMessage.create(original);
+ 
+-        if (false && !async && s.startsWith("/")) { // Paper - Don't handle commands in chat logic
+-            this.handleCommand(s);
+-        } else if (this.player.getChatVisibility() == ChatVisiblity.SYSTEM) {
++        if (this.player.getChatVisibility() == ChatVisiblity.SYSTEM) {
+             // Do nothing, this is coming from a plugin
+         // Paper start
+-        } else if (true) {
++        } else {
+             if (!async && !org.bukkit.Bukkit.isPrimaryThread()) {
+                 org.spigotmc.AsyncCatcher.catchOp("Asynchronous player chat is not allowed here");
+             }
+             final ChatProcessor cp = new ChatProcessor(this.server, this.player, original, async);
+             cp.process();
+             // Paper end
+-        } else if (false) { // Paper
+-            Player player = this.getCraftPlayer();
+-            AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(async, player, s, new LazyPlayerSet(this.server));
+-            String originalFormat = event.getFormat(), originalMessage = event.getMessage();
+-            this.cserver.getPluginManager().callEvent(event);
+-
+-            if (false && PlayerChatEvent.getHandlerList().getRegisteredListeners().length != 0) { // Folia - region threading
+-                // Evil plugins still listening to deprecated event
+-                final PlayerChatEvent queueEvent = new PlayerChatEvent(player, event.getMessage(), event.getFormat(), event.getRecipients());
+-                queueEvent.setCancelled(event.isCancelled());
+-                Waitable waitable = new Waitable() {
+-                    @Override
+-                    protected Object evaluate() {
+-                        org.bukkit.Bukkit.getPluginManager().callEvent(queueEvent);
+-
+-                        if (queueEvent.isCancelled()) {
+-                            return null;
+-                        }
+-
+-                        String message = String.format(queueEvent.getFormat(), queueEvent.getPlayer().getDisplayName(), queueEvent.getMessage());
+-                        if (((LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
+-                            if (!org.spigotmc.SpigotConfig.bungee && originalFormat.equals(queueEvent.getFormat()) && originalMessage.equals(queueEvent.getMessage()) && queueEvent.getPlayer().getName().equalsIgnoreCase(queueEvent.getPlayer().getDisplayName())) { // Spigot
+-                                ServerGamePacketListenerImpl.this.server.getPlayerList().broadcastChatMessage(original, ServerGamePacketListenerImpl.this.player, ChatType.bind(ChatType.CHAT, (Entity) ServerGamePacketListenerImpl.this.player));
+-                                return null;
+-                            }
+-
+-                            for (ServerPlayer recipient : ServerGamePacketListenerImpl.this.server.getPlayerList().players) {
+-                                recipient.getBukkitEntity().sendMessage(ServerGamePacketListenerImpl.this.player.getUUID(), message);
+-                            }
+-                        } else {
+-                            for (Player player : queueEvent.getRecipients()) {
+-                                player.sendMessage(ServerGamePacketListenerImpl.this.player.getUUID(), message);
+-                            }
+-                        }
+-                        ServerGamePacketListenerImpl.this.server.console.sendMessage(message);
+-
+-                        return null;
+-                    }};
+-                if (async) {
+-                    this.server.processQueue.add(waitable);
+-                } else {
+-                    waitable.run();
+-                }
+-                try {
+-                    waitable.get();
+-                } catch (InterruptedException e) {
+-                    Thread.currentThread().interrupt(); // This is proper habit for java. If we aren't handling it, pass it on!
+-                } catch (ExecutionException e) {
+-                    throw new RuntimeException("Exception processing chat event", e.getCause());
+-                }
+-            } else {
+-                if (event.isCancelled()) {
+-                    return;
+-                }
+-
+-                s = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+-                if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
+-                    if (!org.spigotmc.SpigotConfig.bungee && originalFormat.equals(event.getFormat()) && originalMessage.equals(event.getMessage()) && event.getPlayer().getName().equalsIgnoreCase(event.getPlayer().getDisplayName())) { // Spigot
+-                        ServerGamePacketListenerImpl.this.server.getPlayerList().broadcastChatMessage(original, ServerGamePacketListenerImpl.this.player, ChatType.bind(ChatType.CHAT, (Entity) ServerGamePacketListenerImpl.this.player));
+-                        return;
+-                    }
+-
+-                    for (ServerPlayer recipient : this.server.getPlayerList().players) {
+-                        recipient.getBukkitEntity().sendMessage(ServerGamePacketListenerImpl.this.player.getUUID(), s);
+-                    }
+-                } else {
+-                    for (Player recipient : event.getRecipients()) {
+-                        recipient.sendMessage(ServerGamePacketListenerImpl.this.player.getUUID(), s);
+-                    }
+-                }
+-                this.server.console.sendMessage(s);
+-            }
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 1119b6a7f307763c13ef48bcd7643539082aebdc..fa44f039517becadad02e0f98542670053ef05e7 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -755,7 +755,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+         if (yaw == Float.POSITIVE_INFINITY || yaw == Float.NEGATIVE_INFINITY) {
+             if (this instanceof ServerPlayer) {
+                 this.level.getCraftServer().getLogger().warning(this.getScoreboardName() + " was caught trying to crash the server with an invalid yaw");
+-                ((CraftPlayer) this.getBukkitEntity()).kickPlayer("Infinite yaw (Hacking?)");
++                ((CraftPlayer) this.getBukkitEntity()).kick(net.kyori.adventure.text.Component.text("Infinite yaw (Hacking?)"));
+             }
+             yaw = 0;
+         }
+@@ -768,7 +768,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+         if (pitch == Float.POSITIVE_INFINITY || pitch == Float.NEGATIVE_INFINITY) {
+             if (this instanceof ServerPlayer) {
+                 this.level.getCraftServer().getLogger().warning(this.getScoreboardName() + " was caught trying to crash the server with an invalid pitch");
+-                ((CraftPlayer) this.getBukkitEntity()).kickPlayer("Infinite pitch (Hacking?)");
++                ((CraftPlayer) this.getBukkitEntity()).kick(net.kyori.adventure.text.Component.text("Infinite pitch (Hacking?)"));
+             }
+             pitch = 0;
+         }
+diff --git a/src/main/java/net/minecraft/world/item/BlockItem.java b/src/main/java/net/minecraft/world/item/BlockItem.java
+index 8d2c0accadaf0c5d28e7db6e62a05f6c619cf02f..2e31a768f91f627026b4cec5d51fb36120680c06 100644
+--- a/src/main/java/net/minecraft/world/item/BlockItem.java
++++ b/src/main/java/net/minecraft/world/item/BlockItem.java
+@@ -103,7 +103,7 @@ public class BlockItem extends Item {
+                             oldBlockstate.update(true, false);
+                             if (entityhuman instanceof ServerPlayer player) {
+                                 org.apache.logging.log4j.LogManager.getLogger().error("Player {} tried placing invalid block", player.getScoreboardName(), e);
+-                                player.getBukkitEntity().kickPlayer("Packet processing error");
++                                player.getBukkitEntity().kick(net.kyori.adventure.text.Component.text("Packet processing error"));
+                                 return InteractionResult.FAIL;
+                             }
+                             throw e; // Rethrow exception if not placed by a player
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index eefa973d599ecb234083832ae0669b32e95de65a..aed1830f577f840ae7116e6a7d3636daf202c553 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -247,25 +247,6 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+         }
+     }
+ 
+-    @Override
+-    public long getLastPlayed() {
+-        Player player = this.getPlayer();
+-        if (player != null) return player.getLastPlayed();
+-
+-        CompoundTag data = this.getBukkitData();
+-
+-        if (data != null) {
+-            if (data.contains("lastPlayed")) {
+-                return data.getLong("lastPlayed");
+-            } else {
+-                File file = this.getDataFile();
+-                return file.lastModified();
+-            }
+-        } else {
+-            return 0;
+-        }
+-    }
+-
+     @Override
+     public boolean hasPlayedBefore() {
+         return this.getData() != null;
+@@ -359,11 +340,6 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+         return null;
+     }
+ 
+-    @Override
+-    public Location getBedSpawnLocation() {
+-        return this.getRespawnLocation();
+-    }
+-
+     @Override
+     public Location getRespawnLocation() {
+         CompoundTag data = this.getData();
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+index ebbeeee8e95c79f0821ef5b9b97c4da597de4894..2e9794b5514ef421003ba2a48c1be02188e2f85d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+@@ -30,11 +30,6 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
+         System.out.println(ChatColor.stripColor(message));
+     }
+ 
+-    @Override
+-    public void sendRawMessage(UUID sender, String message) {
+-      this.sendRawMessage(message); // Console doesn't know of senders
+-    }
+-
+     @Override
+     public void sendMessage(String... messages) {
+         for (String message : messages) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index afbe7d43faae63056b85258d0e8133ddb7cadf33..64e582044b2e7608268b1c1015a123c257d1af43 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1,6 +1,5 @@
+ package org.bukkit.craftbukkit.entity;
+ 
+-import com.destroystokyo.paper.Title;
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ImmutableSet;
+ import com.google.common.io.BaseEncoding;
+@@ -14,7 +13,6 @@ import java.lang.ref.WeakReference;
+ import java.net.InetAddress;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+-import java.nio.charset.StandardCharsets;
+ import java.time.Duration;
+ import java.time.Instant;
+ import java.util.ArrayList;
+@@ -50,7 +48,6 @@ import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
+ import net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket;
+ import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+ import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket;
+-import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
+ import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+ import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
+ import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+@@ -148,11 +145,9 @@ import org.bukkit.craftbukkit.map.CraftMapView;
+ import org.bukkit.craftbukkit.map.RenderData;
+ import org.bukkit.craftbukkit.potion.CraftPotionEffectType;
+ import org.bukkit.craftbukkit.potion.CraftPotionUtil;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+ import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
+ import org.bukkit.craftbukkit.util.CraftChatMessage;
+ import org.bukkit.craftbukkit.util.CraftLocation;
+-import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+ import org.bukkit.craftbukkit.util.CraftNamespacedKey;
+ import org.bukkit.entity.EntityType;
+ import org.bukkit.entity.LivingEntity;
+@@ -173,11 +168,11 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.StandardMessenger;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+-import org.bukkit.profile.PlayerProfile;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.NotNull;
+ 
+-import net.md_5.bungee.api.chat.BaseComponent; // Spigot
++// Spigot
++
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -286,11 +281,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public void sendRawMessage(@NotNull String message) {
+-        this.sendRawMessage(null, message);
+-    }
+-
+-    @Override
+-    public void sendRawMessage(UUID sender, String message) {
+         Preconditions.checkArgument(message != null, "message cannot be null");
+ 
+         if (this.getHandle().connection == null) return;
+@@ -317,7 +307,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     @Override
+     public void sendMessage(UUID sender, String message) {
+         if (!this.conversationTracker.isConversingModaly()) {
+-            this.sendRawMessage(sender, message);
++            this.sendRawMessage(message);
+         }
+     }
+ 
+@@ -329,133 +319,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     // Paper start
+-    @Override
+-    @Deprecated
+-    public void sendActionBar(BaseComponent[] message) {
+-        if (getHandle().connection == null) return;
+-        net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket packet = new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket((net.minecraft.network.chat.Component) null);
+-        packet.components = message;
+-        getHandle().connection.send(packet);
+-    }
+-
+-    @Override
+-    @Deprecated
+-    public void sendActionBar(@NotNull String message) {
+-        if (getHandle().connection == null || message == null || message.isEmpty()) return;
+-        getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(CraftChatMessage.fromStringOrNull(message)));
+-    }
+-
+-    @Override
+-    @Deprecated
+-    public void sendActionBar(char alternateChar, String message) {
+-        if (message == null || message.isEmpty()) return;
+-        sendActionBar(org.bukkit.ChatColor.translateAlternateColorCodes(alternateChar, message));
+-    }
+-
+-    @Override
+-    public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
+-         if (header != null) {
+-             String headerJson = net.md_5.bungee.chat.ComponentSerializer.toString(header);
+-             playerListHeader = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(headerJson);
+-         } else {
+-             playerListHeader = null;
+-         }
+-
+-        if (footer != null) {
+-             String footerJson = net.md_5.bungee.chat.ComponentSerializer.toString(footer);
+-             playerListFooter = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(footerJson);
+-        } else {
+-             playerListFooter = null;
+-         }
+-
+-         updatePlayerListHeaderFooter();
+-    }
+-
+-    @Override
+-    public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
+-        this.setPlayerListHeaderFooter(header == null ? null : new BaseComponent[]{header},
+-                footer == null ? null : new BaseComponent[]{footer});
+-    }
+-
+-
+-    @Override
+-    public void setTitleTimes(int fadeInTicks, int stayTicks, int fadeOutTicks) {
+-        getHandle().connection.send(new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks));
+-    }
+-
+-    @Override
+-    public void setSubtitle(BaseComponent[] subtitle) {
+-        final ClientboundSetSubtitleTextPacket packet = new ClientboundSetSubtitleTextPacket((net.minecraft.network.chat.Component) null);
+-        packet.components = subtitle;
+-        getHandle().connection.send(packet);
+-    }
+-
+-    @Override
+-    public void setSubtitle(BaseComponent subtitle) {
+-        setSubtitle(new BaseComponent[]{subtitle});
+-    }
+-
+-    @Override
+-    public void showTitle(BaseComponent[] title) {
+-        final ClientboundSetTitleTextPacket packet = new ClientboundSetTitleTextPacket((net.minecraft.network.chat.Component) null);
+-        packet.components = title;
+-        getHandle().connection.send(packet);
+-    }
+-
+-    @Override
+-    public void showTitle(BaseComponent title) {
+-        showTitle(new BaseComponent[]{title});
+-    }
+-
+-    @Override
+-    public void showTitle(BaseComponent[] title, BaseComponent[] subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
+-        setTitleTimes(fadeInTicks, stayTicks, fadeOutTicks);
+-        setSubtitle(subtitle);
+-        showTitle(title);
+-    }
+-
+-    @Override
+-    public void showTitle(BaseComponent title, BaseComponent subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
+-        setTitleTimes(fadeInTicks, stayTicks, fadeOutTicks);
+-        setSubtitle(subtitle);
+-        showTitle(title);
+-    }
+-
+-    @Override
+-    public void sendTitle(Title title) {
+-        Preconditions.checkNotNull(title, "Title is null");
+-        setTitleTimes(title.getFadeIn(), title.getStay(), title.getFadeOut());
+-        setSubtitle(title.getSubtitle() == null ? new BaseComponent[0] : title.getSubtitle());
+-        showTitle(title.getTitle());
+-    }
+-
+-    @Override
+-    public void updateTitle(Title title) {
+-        Preconditions.checkNotNull(title, "Title is null");
+-        setTitleTimes(title.getFadeIn(), title.getStay(), title.getFadeOut());
+-        if (title.getSubtitle() != null) {
+-            setSubtitle(title.getSubtitle());
+-        }
+-        showTitle(title.getTitle());
+-    }
+-
+-    @Override
+-    public void hideTitle() {
+-        getHandle().connection.send(new ClientboundClearTitlesPacket(false));
+-    }
+-    // Paper end
+-
+-    @Override
+-    public @NotNull String getDisplayName() {
+-        if(true) return io.papermc.paper.adventure.DisplayNames.getLegacy(this); // Paper
+-        return this.getHandle().displayName;
+-    }
+-
+-    @Override
+-    public void setDisplayName(final String name) {
+-        this.getHandle().adventure$displayName = name != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(name) : net.kyori.adventure.text.Component.text(this.getName()); // Paper
+-        this.getHandle().displayName = name == null ? this.getName() : name;
+-    }
+ 
+     // Paper start
+     @Override
+@@ -480,56 +343,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return playerListFooter;
+     }
+     // Paper end
+-    @Override
+-    public @NotNull String getPlayerListName() {
+-        return this.getHandle().listName == null ? this.getName() : CraftChatMessage.fromComponent(this.getHandle().listName);
+-    }
+-
+-    @Override
+-    public void setPlayerListName(String name) {
+-        if (name == null) {
+-            name = this.getName();
+-        }
+-        this.getHandle().listName = name.equals(this.getName()) ? null : CraftChatMessage.fromStringOrNull(name);
+-        for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
+-            if (player.getBukkitEntity().canSee(this)) {
+-                player.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
+-            }
+-        }
+-    }
+ 
+     private net.kyori.adventure.text.Component playerListHeader; // Paper - Adventure
+     private net.kyori.adventure.text.Component playerListFooter; // Paper - Adventure
+ 
+-    @Override
+-    public String getPlayerListHeader() {
+-        return (this.playerListHeader == null) ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(this.playerListHeader);
+-    }
+-
+-    @Override
+-    public String getPlayerListFooter() {
+-        return (this.playerListFooter == null) ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(this.playerListFooter); // Paper - Adventure
+-    }
+-
+-    @Override
+-    public void setPlayerListHeader(String header) {
+-        this.playerListHeader = header == null ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(header); // Paper - Adventure
+-        this.updatePlayerListHeaderFooter();
+-    }
+-
+-    @Override
+-    public void setPlayerListFooter(String footer) {
+-        this.playerListFooter = footer == null ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(footer); // Paper - Adventure
+-        this.updatePlayerListHeaderFooter();
+-    }
+-
+-    @Override
+-    public void setPlayerListHeaderFooter(String header, String footer) {
+-        this.playerListHeader = header == null ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(header); // Paper - Adventure
+-        this.playerListFooter = footer == null ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(footer); // Paper - Adventure
+-        this.updatePlayerListHeaderFooter();
+-    }
+-
+     private void updatePlayerListHeaderFooter() {
+         if (this.getHandle().connection == null) return;
+ 
+@@ -539,10 +356,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public boolean equals(Object obj) {
+-        if (!(obj instanceof OfflinePlayer)) {
++        if (!(obj instanceof OfflinePlayer other)) {
+             return false;
+         }
+-        OfflinePlayer other = (OfflinePlayer) obj;
+         if ((this.getUniqueId() == null) || (other.getUniqueId() == null)) {
+             return false;
+         }
+@@ -557,14 +373,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return uuidEquals && idEquals;
+     }
+ 
+-    @Override
+-    public void kickPlayer(String message) {
+-        //org.spigotmc.AsyncCatcher.catchOp("player kick"); // Spigot // Folia - thread-safe now, as it will simply delay the kick
+-        if (this.getHandle().connection == null) return;
+-
+-        this.getHandle().connection.disconnect(message == null ? "" : message, org.bukkit.event.player.PlayerKickEvent.Cause.PLUGIN); // Paper - kick event cause
+-    }
+-
+     // Paper start
+     private static final net.kyori.adventure.text.Component DEFAULT_KICK_COMPONENT = net.kyori.adventure.text.Component.translatable("multiplayer.disconnect.kicked");
+     @Override
+@@ -595,7 +403,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         } else if (com.destroystokyo.paper.ClientOption.CHAT_VISIBILITY == type) {
+             return type.getType().cast(getHandle().getChatVisibility() == null ? com.destroystokyo.paper.ClientOption.ChatVisibility.UNKNOWN : com.destroystokyo.paper.ClientOption.ChatVisibility.valueOf(getHandle().getChatVisibility().name()));
+         } else if (com.destroystokyo.paper.ClientOption.LOCALE == type) {
+-            return type.getType().cast(getLocale());
++            return type.getType().cast(locale());
+         } else if (com.destroystokyo.paper.ClientOption.MAIN_HAND == type) {
+             return type.getType().cast(getMainHand());
+         } else if (com.destroystokyo.paper.ClientOption.VIEW_DISTANCE == type) {
+@@ -618,24 +426,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+     // Paper end - Add sendOpLevel API
+ 
+-    // Paper start - custom chat completions API
+-    @Override
+-    public void addAdditionalChatCompletions(@NotNull Collection<String> completions) {
+-        this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket(
+-            net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket.Action.ADD,
+-            new ArrayList<>(completions)
+-        ));
+-    }
+-
+-    @Override
+-    public void removeAdditionalChatCompletions(@NotNull Collection<String> completions) {
+-        this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket(
+-            net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket.Action.REMOVE,
+-            new ArrayList<>(completions)
+-        ));
+-    }
+-    // Paper end - custom chat completions API
+-
+     @Override
+     public void setCompassTarget(@NotNull Location loc) {
+         Preconditions.checkArgument(loc != null, "Location cannot be null");
+@@ -679,11 +469,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.server.dispatchCommand(this, command);
+     }
+ 
+-    @Override
+-    public void playNote(@NotNull Location loc, byte instrument, byte note) {
+-        this.playNote(loc, Instrument.getByType(instrument), new Note(note));
+-    }
+-
+     @Override
+     public void playNote(@NotNull Location loc, @NotNull Instrument instrument, @NotNull Note note) {
+         Preconditions.checkArgument(loc != null, "Location cannot be null");
+@@ -827,18 +612,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().connection.send(new ClientboundStopSoundPacket(null, null));
+     }
+ 
+-    @Override
+-    public void playEffect(Location loc, Effect effect, int data) {
+-        Preconditions.checkArgument(effect != null, "Effect cannot be null");
+-        Preconditions.checkArgument(loc != null, "Location cannot be null");
+-
+-        if (this.getHandle().connection == null) return;
+-
+-        int packetData = effect.getId();
+-        ClientboundLevelEventPacket packet = new ClientboundLevelEventPacket(packetData, CraftLocation.toBlockPosition(loc), data, false);
+-        this.getHandle().connection.send(packet);
+-    }
+-
+     @Override
+     public <T> void playEffect(Location loc, Effect effect, T data) {
+         Preconditions.checkArgument(effect != null, "Effect cannot be null");
+@@ -862,14 +635,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.getHandle().gameMode.destroyBlock(new BlockPos(block.getX(), block.getY(), block.getZ()));
+     }
+ 
+-    @Override
+-    public void sendBlockChange(Location loc, Material material, byte data) {
+-        if (this.getHandle().connection == null) return;
+-
+-        ClientboundBlockUpdatePacket packet = new ClientboundBlockUpdatePacket(CraftLocation.toBlockPosition(loc), CraftMagicNumbers.getBlock(material, data));
+-        this.getHandle().connection.send(packet);
+-    }
+-
+     @Override
+     public void sendBlockChange(Location loc, BlockData block) {
+         if (this.getHandle().connection == null) return;
+@@ -935,11 +700,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         }
+     }
+ 
+-    @Override
+-    public void sendBlockChanges(Collection<BlockState> blocks, boolean suppressLightUpdates) {
+-        this.sendBlockChanges(blocks);
+-    }
+-
+     private record ChunkSectionChanges(ShortSet positions, List<net.minecraft.world.level.block.state.BlockState> blockData) {
+ 
+         public ChunkSectionChanges() {
+@@ -974,51 +734,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().connection.send(packet);
+     }
+ 
+-    // Paper start
+-    @Override
+-    public void sendSignChange(Location loc, @Nullable List<? extends net.kyori.adventure.text.Component> lines, DyeColor dyeColor, boolean hasGlowingText) {
+-        if (getHandle().connection == null) {
+-            return;
+-        }
+-        if (lines == null) {
+-            lines = new java.util.ArrayList<>(4);
+-        }
+-        Preconditions.checkArgument(loc != null, "Location cannot be null");
+-        Preconditions.checkArgument(dyeColor != null, "DyeColor cannot be null");
+-        if (lines.size() < 4) {
+-            throw new IllegalArgumentException("Must have at least 4 lines");
+-        }
+-        Component[] components = CraftSign.sanitizeLines(lines);
+-        this.sendSignChange0(components, loc, dyeColor, hasGlowingText);
+-    }
+-    // Paper end
+-    @Override
+-    public void sendSignChange(@NotNull Location loc, String[] lines) {
+-        this.sendSignChange(loc, lines, DyeColor.BLACK);
+-    }
+-
+-    @Override
+-    public void sendSignChange(@NotNull Location loc, String[] lines, DyeColor dyeColor) {
+-        this.sendSignChange(loc, lines, dyeColor, false);
+-    }
+-
+-    @Override
+-    public void sendSignChange(Location loc, String[] lines, DyeColor dyeColor, boolean hasGlowingText) {
+-        Preconditions.checkArgument(loc != null, "Location cannot be null");
+-        Preconditions.checkArgument(dyeColor != null, "DyeColor cannot be null");
+-
+-        if (lines == null) {
+-            lines = new String[4];
+-        }
+-        Preconditions.checkArgument(lines.length >= 4, "Must have at least 4 lines (%s)", lines.length);
+-
+-        if (this.getHandle().connection == null) return;
+-
+-        Component[] components = CraftSign.sanitizeLines(lines);
+-        // Paper start - adventure
+-        this.sendSignChange0(components, loc, dyeColor, hasGlowingText);
+-    }
+-
+     private void sendSignChange0(Component[] components, Location loc, DyeColor dyeColor, boolean hasGlowingText) {
+         SignBlockEntity sign = new SignBlockEntity(CraftLocation.toBlockPosition(loc), Blocks.OAK_SIGN.defaultBlockState());
+         SignText text = sign.getFrontText();
+@@ -1455,11 +1170,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.getHandle().fauxSleeping;
+     }
+ 
+-    @Override
+-    public Location getBedSpawnLocation() {
+-        return this.getRespawnLocation();
+-    }
+-
+     @Override
+     public Location getRespawnLocation() {
+         ServerLevel world = this.getHandle().server.getLevel(this.getHandle().getRespawnDimension());
+@@ -1475,21 +1185,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return null;
+     }
+ 
+-    @Override
+-    public void setBedSpawnLocation(Location location) {
+-        this.setBedSpawnLocation(location, false);
+-    }
+-
+     @Override
+     public void setRespawnLocation(Location location) {
+         this.setRespawnLocation(location, false);
+     }
+ 
+-    @Override
+-    public void setBedSpawnLocation(Location location, boolean override) {
+-        this.setRespawnLocation(location, override);
+-    }
+-
+     @Override
+     public void setRespawnLocation(Location location, boolean override) {
+         if (location == null) {
+@@ -1685,7 +1385,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Date expires, String source, boolean kickPlayer) { // Paper - fix ban list API
+         BanEntry<com.destroystokyo.paper.profile.PlayerProfile> banEntry = ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), reason, expires, source); // Paper - fix ban list API
+         if (kickPlayer) {
+-            this.kickPlayer(reason);
++            this.kick(net.kyori.adventure.text.Component.text(reason));
+         }
+         return banEntry;
+     }
+@@ -1705,7 +1405,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         Preconditions.checkArgument(this.getAddress() != null, "The Address of this Player is null");
+         BanEntry<InetAddress> banEntry = ((IpBanList) this.server.getBanList(BanList.Type.IP)).addBan(this.getAddress().getAddress(), reason, expires, source);
+         if (kickPlayer) {
+-            this.kickPlayer(reason);
++            this.kick(net.kyori.adventure.text.Component.text(reason));
+         }
+         return banEntry;
+     }
+@@ -1895,12 +1595,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return (plugin == null) ? null : CraftPlayer.pluginWeakReferences.computeIfAbsent(plugin, WeakReference::new);
+     }
+ 
+-    @Override
+-    @Deprecated
+-    public void hidePlayer(Player player) {
+-        this.hideEntity0(null, player);
+-    }
+-
+     @Override
+     public void hidePlayer(@NotNull Plugin plugin, @NotNull Player player) {
+         this.hideEntity(plugin, player);
+@@ -1982,12 +1676,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         }
+     }
+ 
+-    @Override
+-    @Deprecated
+-    public void showPlayer(Player player) {
+-        this.showEntity0(null, player);
+-    }
+-
+     @Override
+     public void showPlayer(@NotNull Plugin plugin, @NotNull Player player) {
+         this.showEntity(plugin, player);
+@@ -2240,11 +1928,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.firstPlayed;
+     }
+ 
+-    @Override
+-    public long getLastPlayed() {
+-        return this.lastPlayed;
+-    }
+-
+     @Override
+     public boolean hasPlayedBefore() {
+         return this.hasPlayedBefore;
+@@ -2367,52 +2050,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().connection.send(packet);
+     }
+ 
+-    @Override
+-    public void setTexturePack(String url) {
+-        this.setResourcePack(url);
+-    }
+-
+-    @Override
+-    public void setResourcePack(String url) {
+-        this.setResourcePack(url, (byte[]) null);
+-    }
+-
+-    @Override
+-    public void setResourcePack(String url, byte[] hash) {
+-        this.setResourcePack(url, hash, false);
+-    }
+-
+-    @Override
+-    public void setResourcePack(String url, byte[] hash, String prompt) {
+-        this.setResourcePack(url, hash, prompt, false);
+-    }
+-
+-    @Override
+-    public void setResourcePack(String url, byte[] hash, boolean force) {
+-        this.setResourcePack(url, hash, (String) null, force);
+-    }
+-
+-    @Override
+-    public void setResourcePack(String url, byte[] hash, String prompt, boolean force) {
+-        Preconditions.checkArgument(url != null, "Resource pack URL cannot be null");
+-
+-        this.setResourcePack(UUID.nameUUIDFromBytes(url.getBytes(StandardCharsets.UTF_8)), url, hash, prompt, force);
+-    }
+-
+-    @Override
+-    public void setResourcePack(UUID id, String url, byte[] hash, String prompt, boolean force) {
+-        Preconditions.checkArgument(id != null, "Resource pack ID cannot be null");
+-        Preconditions.checkArgument(url != null, "Resource pack URL cannot be null");
+-
+-        String hashStr = "";
+-        if (hash != null) {
+-            Preconditions.checkArgument(hash.length == 20, "Resource pack hash should be 20 bytes long but was %s", hash.length);
+-            hashStr = BaseEncoding.base16().lowerCase().encode(hash);
+-        }
+-
+-        this.handlePushResourcePack(new ClientboundResourcePackPushPacket(id, url, hashStr, force, CraftChatMessage.fromStringOrNull(prompt, true)), true);
+-    }
+-
+     @Override
+     public void addResourcePack(UUID id, String url, byte[] hash, String prompt, boolean force) {
+         Preconditions.checkArgument(url != null, "Resource pack URL cannot be null");
+@@ -2814,27 +2451,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().setCamera((entity == null) ? null : ((CraftEntity) entity).getHandle());
+     }
+ 
+-    @Override
+-    public void sendTitle(String title, String subtitle) {
+-        this.sendTitle(title, subtitle, 10, 70, 20);
+-    }
+-
+-    @Override
+-    public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+-        ClientboundSetTitlesAnimationPacket times = new ClientboundSetTitlesAnimationPacket(fadeIn, stay, fadeOut);
+-        this.getHandle().connection.send(times);
+-
+-        if (title != null) {
+-            ClientboundSetTitleTextPacket packetTitle = new ClientboundSetTitleTextPacket(CraftChatMessage.fromString(title)[0]);
+-            this.getHandle().connection.send(packetTitle);
+-        }
+-
+-        if (subtitle != null) {
+-            ClientboundSetSubtitleTextPacket packetSubtitle = new ClientboundSetSubtitleTextPacket(CraftChatMessage.fromString(subtitle)[0]);
+-            this.getHandle().connection.send(packetSubtitle);
+-        }
+-    }
+-
+     @Override
+     public void resetTitle() {
+         ClientboundClearTitlesPacket packetReset = new ClientboundClearTitlesPacket(true);
+@@ -2935,14 +2551,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.getHandle().connection.latency();
+     }
+ 
+-    @Override
+-    public String getLocale() {
+-        // Paper start - Locale change event
+-        final String locale = this.getHandle().language;
+-        return locale != null ? locale : "en_us";
+-        // Paper end
+-    }
+-
+     // Paper start
+     public void setAffectsSpawning(boolean affects) {
+         this.getHandle().affectsSpawning = affects;
+@@ -2972,11 +2580,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getInventory().setItemInMainHand(hand);
+     }
+ 
+-    @Override
+-    public void openSign(Sign sign) {
+-        this.openSign(sign, Side.FRONT);
+-    }
+-
+     @Override
+     public void openSign(@NotNull Sign sign, @NotNull Side side) {
+         CraftSign.openSign(sign, this, side);
+@@ -3288,56 +2891,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+             return java.util.Collections.unmodifiableSet( ret );
+         }
+-
+-        @Override
+-        public void sendMessage(BaseComponent component) {
+-          this.sendMessage( new BaseComponent[] { component } );
+-        }
+-
+-        @Override
+-        public void sendMessage(BaseComponent... components) {
+-           this.sendMessage(net.md_5.bungee.api.ChatMessageType.SYSTEM, components);
+-        }
+-
+-        @Override
+-        public void sendMessage(UUID sender, BaseComponent component) {
+-            this.sendMessage(net.md_5.bungee.api.ChatMessageType.CHAT, sender, component);
+-        }
+-
+-        @Override
+-        public void sendMessage(UUID sender, BaseComponent... components) {
+-            this.sendMessage(net.md_5.bungee.api.ChatMessageType.CHAT, sender, components);
+-        }
+-
+-        @Override
+-        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent component) {
+-            this.sendMessage( position, new BaseComponent[] { component } );
+-        }
+-
+-        @Override
+-        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent... components) {
+-            this.sendMessage(position, null, components);
+-        }
+-
+-        @Override
+-        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, UUID sender, BaseComponent component) {
+-            this.sendMessage( position, sender, new BaseComponent[] { component } );
+-        }
+-
+-        @Override
+-        public void sendMessage(net.md_5.bungee.api.ChatMessageType position, UUID sender, BaseComponent... components) {
+-            if ( CraftPlayer.this.getHandle().connection == null ) return;
+-
+-            CraftPlayer.this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(components, position == net.md_5.bungee.api.ChatMessageType.ACTION_BAR));
+-        }
+-
+-        // Paper start
+-        @Override
+-        public int getPing()
+-        {
+-            return CraftPlayer.this.getPing();
+-        }
+-        // Paper end
+     };
+ 
+     // Paper start - brand support

@@ -1,0 +1,4151 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: devoirr <138160506+devoirr@users.noreply.github.com>
+Date: Thu, 25 Apr 2024 10:52:21 +0300
+Subject: [PATCH] Removed deprecated API from Player class
+
+
+diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
+index 30298a629b39bd43ce14b414fc697b2dfcbea89c..f907bcf28dfcc174ce6e869e61d1b119bacaaa7b 100644
+--- a/src/main/java/org/bukkit/OfflinePlayer.java
++++ b/src/main/java/org/bukkit/OfflinePlayer.java
+@@ -30,7 +30,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return true if they are online
+      */
+-    public boolean isOnline();
++    boolean isOnline();
+ 
+     // Paper start
+     /**
+@@ -41,7 +41,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return true if this player instance is connected
+      */
+-    public boolean isConnected();
++    boolean isConnected();
+     // Paper end
+ 
+     /**
+@@ -54,7 +54,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      */
+     @Override
+     @Nullable
+-    public String getName();
++    String getName();
+ 
+     /**
+      * Returns the UUID of this player
+@@ -63,7 +63,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      */
+     @Override
+     @NotNull
+-    public UUID getUniqueId();
++    UUID getUniqueId();
+ 
+     /**
+      * Gets a copy of the player's profile.
+@@ -82,74 +82,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return true if banned, otherwise false
+      */
+-    public boolean isBanned();
+-    // Paper start
+-    /**
+-     * Permanently Bans this player from the server
+-     *
+-     * @param reason Reason for Ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)}
+-     */
+-    @NotNull
+-    @Deprecated
+-    public default BanEntry banPlayer(@Nullable String reason) {
+-        return banPlayer(reason, null, null);
+-    }
+-
+-    /**
+-     * Permanently Bans this player from the server
+-     * @param reason Reason for Ban
+-     * @param source Source of the ban, or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)}
+-     */
+-    @NotNull
+-    @Deprecated
+-    public default BanEntry banPlayer(@Nullable String reason, @Nullable String source) {
+-        return banPlayer(reason, null, source);
+-    }
+-
+-    /**
+-     * Bans this player from the server
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)}
+-     */
+-    @NotNull
+-    @Deprecated
+-    public default BanEntry banPlayer(@Nullable String reason, @Nullable java.util.Date expires) {
+-        return banPlayer(reason, expires, null);
+-    }
+-
+-    /**
+-     * Bans this player from the server
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @param source Source of the ban or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)}
+-     */
+-    @NotNull
+-    @Deprecated
+-    public default BanEntry banPlayer(@Nullable String reason, @Nullable java.util.Date expires, @Nullable String source) {
+-        return banPlayer(reason, expires, source, true);
+-    }
+-
+-    /**
+-     * @deprecated use {@link #ban(String, Date, String)}
+-     */
+-    @NotNull
+-    @Deprecated
+-    public default BanEntry banPlayer(@Nullable String reason, @Nullable java.util.Date expires, @Nullable String source, boolean kickIfOnline) {
+-        BanEntry banEntry = Bukkit.getServer().getBanList(BanList.Type.NAME).addBan(getName(), reason, expires, source);
+-        if (kickIfOnline && isOnline()) {
+-            getPlayer().kickPlayer(reason);
+-        }
+-        return banEntry;
+-    }
+-    // Paper end
++    boolean isBanned();
+ 
+     /**
+      * Adds this user to the {@link ProfileBanList}. If a previous ban exists, this will
+@@ -163,7 +96,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source); // Paper - fix ban list API
+ 
+     /**
+      * Adds this user to the {@link ProfileBanList}. If a previous ban exists, this will
+@@ -177,7 +110,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source); // Paper - fix ban list API
+ 
+     /**
+      * Adds this user to the {@link ProfileBanList}. If a previous ban exists, this will
+@@ -191,21 +124,21 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source); // Paper - fix ban list API
+ 
+     /**
+      * Checks if this player is whitelisted or not
+      *
+      * @return true if whitelisted
+      */
+-    public boolean isWhitelisted();
++    boolean isWhitelisted();
+ 
+     /**
+      * Sets if this player is whitelisted or not
+      *
+      * @param value true if whitelisted
+      */
+-    public void setWhitelisted(boolean value);
++    void setWhitelisted(boolean value);
+ 
+     /**
+      * Gets a {@link Player} object that this represents, if there is one
+@@ -216,7 +149,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @return Online player
+      */
+     @Nullable
+-    public Player getPlayer();
++    Player getPlayer();
+ 
+     /**
+      * Gets the first date and time that this player was witnessed on this
+@@ -228,42 +161,14 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return Date of first log-in for this player, or 0
+      */
+-    public long getFirstPlayed();
+-
+-    /**
+-     * Gets the last date and time that this player was witnessed on this
+-     * server.
+-     * <p>
+-     * If the player has never played before, this will return 0. Otherwise,
+-     * it will be the amount of milliseconds since midnight, January 1, 1970
+-     * UTC.
+-     *
+-     * @return Date of last log-in for this player, or 0
+-     * @deprecated The API contract is ambiguous and the implementation may or may not return the correct value given this API ambiguity. It is instead recommended use {@link #getLastLogin()} or {@link #getLastSeen()} depending on your needs.
+-     */
+-    @Deprecated
+-    public long getLastPlayed();
++    long getFirstPlayed();
+ 
+     /**
+      * Checks if this player has played on this server before.
+      *
+      * @return True if the player has played before, otherwise false
+      */
+-    public boolean hasPlayedBefore();
+-
+-    /**
+-     * Gets the Location where the player will spawn at their bed, null if
+-     * they have not slept in one or their current bed spawn is invalid.
+-     *
+-     * @return Bed Spawn Location if bed exists, otherwise null.
+-     *
+-     * @see #getRespawnLocation()
+-     * @deprecated Misleading name. This method also returns the location of
+-     * respawn anchors.
+-     */
+-    @Nullable
+-    @Deprecated
+-    public Location getBedSpawnLocation();
++    boolean hasPlayedBefore();
+     // Paper start
+     /**
+      * Gets the last date and time that this player logged into the server.
+@@ -274,7 +179,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return last login time
+      */
+-    public long getLastLogin();
++    long getLastLogin();
+ 
+     /**
+      * Gets the last date and time that this player was seen on the server.
+@@ -286,7 +191,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      *
+      * @return last seen time
+      */
+-    public long getLastSeen();
++    long getLastSeen();
+     // Paper end
+ 
+     /**
+@@ -296,7 +201,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @return respawn location if exists, otherwise null.
+      */
+     @Nullable
+-    public Location getRespawnLocation();
++    Location getRespawnLocation();
+ 
+     /**
+      * Increments the given statistic for this player.
+@@ -309,7 +214,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player.
+@@ -322,7 +227,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
++    void decrementStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
+ 
+     /**
+      * Increments the given statistic for this player.
+@@ -334,7 +239,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic, int amount) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic, int amount) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player.
+@@ -346,7 +251,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic, int amount) throws IllegalArgumentException;
++    void decrementStatistic(@NotNull Statistic statistic, int amount) throws IllegalArgumentException;
+ 
+     /**
+      * Sets the given statistic for this player.
+@@ -358,7 +263,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public void setStatistic(@NotNull Statistic statistic, int newValue) throws IllegalArgumentException;
++    void setStatistic(@NotNull Statistic statistic, int newValue) throws IllegalArgumentException;
+ 
+     /**
+      * Gets the value of the given statistic for this player.
+@@ -369,7 +274,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the statistic requires an
+      *     additional parameter
+      */
+-    public int getStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
++    int getStatistic(@NotNull Statistic statistic) throws IllegalArgumentException;
+ 
+     /**
+      * Increments the given statistic for this player for the given material.
+@@ -384,7 +289,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player for the given material.
+@@ -399,7 +304,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
++    void decrementStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
+ 
+     /**
+      * Gets the value of the given statistic for this player.
+@@ -412,7 +317,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public int getStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
++    int getStatistic(@NotNull Statistic statistic, @NotNull Material material) throws IllegalArgumentException;
+ 
+     /**
+      * Increments the given statistic for this player for the given material.
+@@ -426,7 +331,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic, @NotNull Material material, int amount) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic, @NotNull Material material, int amount) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player for the given material.
+@@ -440,7 +345,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic, @NotNull Material material, int amount) throws IllegalArgumentException;
++    void decrementStatistic(@NotNull Statistic statistic, @NotNull Material material, int amount) throws IllegalArgumentException;
+ 
+     /**
+      * Sets the given statistic for this player for the given material.
+@@ -454,7 +359,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void setStatistic(@NotNull Statistic statistic, @NotNull Material material, int newValue) throws IllegalArgumentException;
++    void setStatistic(@NotNull Statistic statistic, @NotNull Material material, int newValue) throws IllegalArgumentException;
+ 
+     /**
+      * Increments the given statistic for this player for the given entity.
+@@ -469,7 +374,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player for the given entity.
+@@ -484,7 +389,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
++    void decrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
+ 
+     /**
+      * Gets the value of the given statistic for this player.
+@@ -497,7 +402,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public int getStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
++    int getStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType) throws IllegalArgumentException;
+ 
+     /**
+      * Increments the given statistic for this player for the given entity.
+@@ -511,7 +416,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void incrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int amount) throws IllegalArgumentException;
++    void incrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int amount) throws IllegalArgumentException;
+ 
+     /**
+      * Decrements the given statistic for this player for the given entity.
+@@ -525,7 +430,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void decrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int amount);
++    void decrementStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int amount);
+ 
+     /**
+      * Sets the given statistic for this player for the given entity.
+@@ -539,7 +444,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @throws IllegalArgumentException if the given parameter is not valid
+      *     for the statistic
+      */
+-    public void setStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int newValue);
++    void setStatistic(@NotNull Statistic statistic, @NotNull EntityType entityType, int newValue);
+ 
+     /**
+      * Gets the player's last death location.
+@@ -547,7 +452,7 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * @return the last death location if it exists, otherwise null.
+      */
+     @Nullable
+-    public Location getLastDeathLocation();
++    Location getLastDeathLocation();
+ 
+     /**
+      * Gets the player's current location.
+@@ -556,5 +461,5 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      * before.
+      */
+     @Nullable
+-    public Location getLocation();
++    Location getLocation();
+ }
+diff --git a/src/main/java/org/bukkit/conversations/Conversable.java b/src/main/java/org/bukkit/conversations/Conversable.java
+index 0817f2395c2b18828565435568ce651f5ba99a99..2cd89c686e8acb8ee47cd2e43c377a32eada9a01 100644
+--- a/src/main/java/org/bukkit/conversations/Conversable.java
++++ b/src/main/java/org/bukkit/conversations/Conversable.java
+@@ -1,8 +1,6 @@
+ package org.bukkit.conversations;
+ 
+-import java.util.UUID;
+ import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+ 
+ /**
+  * The Conversable interface is used to indicate objects that can have
+@@ -16,7 +14,7 @@ public interface Conversable {
+      *
+      * @return True if a conversation is in progress
+      */
+-    public boolean isConversing();
++    boolean isConversing();
+ 
+     /**
+      * Accepts input into the active conversation. If no conversation is in
+@@ -24,7 +22,7 @@ public interface Conversable {
+      *
+      * @param input The input message into the conversation
+      */
+-    public void acceptConversationInput(@NotNull String input);
++    void acceptConversationInput(@NotNull String input);
+ 
+     /**
+      * Enters into a dialog with a Conversation object.
+@@ -33,14 +31,14 @@ public interface Conversable {
+      * @return True if the conversation should proceed, false if it has been
+      *     enqueued
+      */
+-    public boolean beginConversation(@NotNull Conversation conversation);
++    boolean beginConversation(@NotNull Conversation conversation);
+ 
+     /**
+      * Abandons an active conversation.
+      *
+      * @param conversation The conversation to abandon
+      */
+-    public void abandonConversation(@NotNull Conversation conversation);
++    void abandonConversation(@NotNull Conversation conversation);
+ 
+     /**
+      * Abandons an active conversation.
+@@ -48,7 +46,7 @@ public interface Conversable {
+      * @param conversation The conversation to abandon
+      * @param details Details about why the conversation was abandoned
+      */
+-    public void abandonConversation(@NotNull Conversation conversation, @NotNull ConversationAbandonedEvent details);
++    void abandonConversation(@NotNull Conversation conversation, @NotNull ConversationAbandonedEvent details);
+ 
+     /**
+      * Sends this sender a message raw
+@@ -56,15 +54,5 @@ public interface Conversable {
+      * @param message Message to be displayed
+      */
+     @org.jetbrains.annotations.ApiStatus.Obsolete // Paper
+-    public void sendRawMessage(@NotNull String message);
+-
+-    /**
+-     * Sends this sender a message raw
+-     *
+-     * @param message Message to be displayed
+-     * @param sender The sender of this message
+-     * @deprecated sender UUID is ignored
+-     */
+-    @Deprecated // Paper
+-    public void sendRawMessage(@Nullable UUID sender, @NotNull String message);
++    void sendRawMessage(@NotNull String message);
+ }
+diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
+index 30538291749cc7f233e9a6beb95b0e307cf882d8..581d3f503c98a903658caefbb7b039d94cf55d6d 100644
+--- a/src/main/java/org/bukkit/entity/HumanEntity.java
++++ b/src/main/java/org/bukkit/entity/HumanEntity.java
+@@ -274,28 +274,6 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, InventoryHolder
+     void closeInventory(@NotNull org.bukkit.event.inventory.InventoryCloseEvent.Reason reason);
+     // Paper end
+ 
+-    /**
+-     * Returns the ItemStack currently in your hand, can be empty.
+-     *
+-     * @return The ItemStack of the item you are currently holding.
+-     * @deprecated Humans may now dual wield in their off hand, use explicit
+-     * methods in {@link PlayerInventory}.
+-     */
+-    @Deprecated
+-    @NotNull
+-    ItemStack getItemInHand();
+-
+-    /**
+-     * Sets the item to the given ItemStack, this will replace whatever the
+-     * user was holding.
+-     *
+-     * @param item The ItemStack which will end up in the hand
+-     * @deprecated Humans may now dual wield in their off hand, use explicit
+-     * methods in {@link PlayerInventory}.
+-     */
+-    @Deprecated
+-    void setItemInHand(@Nullable ItemStack item);
+-
+     /**
+      * Returns the ItemStack currently on your cursor, can be empty. Will
+      * always be empty if the player currently has no open window.
+@@ -627,16 +605,6 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, InventoryHolder
+     @Deprecated
+     void setShoulderEntityRight(@Nullable Entity entity);
+     // Paper start - Add method to open already placed sign
+-    /**
+-     * Opens an editor window for the specified sign
+-     *
+-     * @param sign The sign to open
+-     * @deprecated use {@link #openSign(org.bukkit.block.Sign, org.bukkit.block.sign.Side)}
+-     */
+-    @Deprecated
+-    default void openSign(@NotNull org.bukkit.block.Sign sign) {
+-        this.openSign(sign, org.bukkit.block.sign.Side.FRONT);
+-    }
+ 
+     /**
+      * Opens an editor window for the specified sign
+diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
+index 65112eae8b92344796850b1e4c89e75443eab2fe..415b0a0e772ab1c25f8a1093bd286d3f8849292e 100644
+--- a/src/main/java/org/bukkit/entity/LivingEntity.java
++++ b/src/main/java/org/bukkit/entity/LivingEntity.java
+@@ -34,7 +34,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return height of the living entity's eyes above its location
+      */
+-    public double getEyeHeight();
++    double getEyeHeight();
+ 
+     /**
+      * Gets the height of the living entity's eyes above its Location.
+@@ -43,7 +43,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *     sneaking and gliding will be ignored
+      * @return height of the living entity's eyes above its location
+      */
+-    public double getEyeHeight(boolean ignorePose);
++    double getEyeHeight(boolean ignorePose);
+ 
+     /**
+      * Get a Location detailing the current eye position of the living entity.
+@@ -51,7 +51,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return a location at the eyes of the living entity
+      */
+     @NotNull
+-    public Location getEyeLocation();
++    Location getEyeLocation();
+ 
+     /**
+      * Gets all blocks along the living entity's line of sight.
+@@ -67,7 +67,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *     sight
+      */
+     @NotNull
+-    public List<Block> getLineOfSight(@Nullable Set<Material> transparent, int maxDistance);
++    List<Block> getLineOfSight(@Nullable Set<Material> transparent, int maxDistance);
+ 
+     /**
+      * Gets the block that the living entity has targeted.
+@@ -83,35 +83,9 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return block that the living entity has targeted
+      */
+     @NotNull
+-    public Block getTargetBlock(@Nullable Set<Material> transparent, int maxDistance);
++    Block getTargetBlock(@Nullable Set<Material> transparent, int maxDistance);
+ 
+     // Paper start
+-    /**
+-     * Gets the block that the living entity has targeted, ignoring fluids
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @return block that the living entity has targeted,
+-     *     or null if no block is within maxDistance
+-     * @deprecated use {@link #getTargetBlockExact(int)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public default Block getTargetBlock(int maxDistance) {
+-        return getTargetBlock(maxDistance, com.destroystokyo.paper.block.TargetBlockInfo.FluidMode.NEVER);
+-    }
+-
+-    /**
+-     * Gets the block that the living entity has targeted
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @param fluidMode whether to check fluids or not
+-     * @return block that the living entity has targeted,
+-     *     or null if no block is within maxDistance
+-     * @deprecated use {@link #getTargetBlockExact(int, FluidCollisionMode)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public Block getTargetBlock(int maxDistance, @NotNull com.destroystokyo.paper.block.TargetBlockInfo.FluidMode fluidMode);
+ 
+     /**
+      * Gets the blockface of that block that the living entity has targeted, ignoring fluids
+@@ -121,7 +95,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *     or null if no block is targeted
+      */
+     @Nullable
+-    public default org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance) {
++    default org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance) {
+         return getTargetBlockFace(maxDistance, org.bukkit.FluidCollisionMode.NEVER);
+     }
+ 
+@@ -132,49 +106,9 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param fluidMode whether to check fluids or not
+      * @return blockface of the block that the living entity has targeted,
+      *     or null if no block is targeted
+-     * @deprecated use {@link #getTargetBlockFace(int, FluidCollisionMode)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance, @NotNull com.destroystokyo.paper.block.TargetBlockInfo.FluidMode fluidMode);
+-
+-    /**
+-     * Gets the blockface of that block that the living entity has targeted
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @param fluidMode whether to check fluids or not
+-     * @return blockface of the block that the living entity has targeted,
+-     *     or null if no block is targeted
+-     */
+-    @Nullable
+-    public org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance, @NotNull FluidCollisionMode fluidMode);
+-
+-    /**
+-     * Gets information about the block the living entity has targeted, ignoring fluids
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @return TargetBlockInfo about the block the living entity has targeted,
+-     *     or null if no block is targeted
+-     * @deprecated use {@link #rayTraceBlocks(double)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public default com.destroystokyo.paper.block.TargetBlockInfo getTargetBlockInfo(int maxDistance) {
+-        return getTargetBlockInfo(maxDistance, com.destroystokyo.paper.block.TargetBlockInfo.FluidMode.NEVER);
+-    }
+-
+-    /**
+-     * Gets information about the block the living entity has targeted
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @param fluidMode whether to check fluids or not
+-     * @return TargetBlockInfo about the block the living entity has targeted,
+-     *     or null if no block is targeted
+-     * @deprecated use {@link #rayTraceBlocks(double, FluidCollisionMode)}
+      */
+-    @Deprecated(forRemoval = true)
+     @Nullable
+-    public com.destroystokyo.paper.block.TargetBlockInfo getTargetBlockInfo(int maxDistance, @NotNull com.destroystokyo.paper.block.TargetBlockInfo.FluidMode fluidMode);
++    org.bukkit.block.BlockFace getTargetBlockFace(int maxDistance, @NotNull FluidCollisionMode fluidMode);
+ 
+     /**
+      * Gets information about the entity being targeted
+@@ -183,7 +117,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return entity being targeted, or null if no entity is targeted
+      */
+     @Nullable
+-    public default Entity getTargetEntity(int maxDistance) {
++    default Entity getTargetEntity(int maxDistance) {
+         return getTargetEntity(maxDistance, false);
+     }
+ 
+@@ -195,21 +129,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return entity being targeted, or null if no entity is targeted
+      */
+     @Nullable
+-    public Entity getTargetEntity(int maxDistance, boolean ignoreBlocks);
+-
+-    /**
+-     * Gets information about the entity being targeted
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @return TargetEntityInfo about the entity being targeted,
+-     *     or null if no entity is targeted
+-     * @deprecated use {@link #rayTraceEntities(int)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public default com.destroystokyo.paper.entity.TargetEntityInfo getTargetEntityInfo(int maxDistance) {
+-        return getTargetEntityInfo(maxDistance, false);
+-    }
++    Entity getTargetEntity(int maxDistance, boolean ignoreBlocks);
+ 
+     /**
+      * Gets information about the entity being targeted
+@@ -223,19 +143,6 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+         return this.rayTraceEntities(maxDistance, false);
+     }
+ 
+-    /**
+-     * Gets information about the entity being targeted
+-     *
+-     * @param maxDistance this is the maximum distance to scan
+-     * @param ignoreBlocks true to scan through blocks
+-     * @return TargetEntityInfo about the entity being targeted,
+-     *     or null if no entity is targeted
+-     * @deprecated use {@link #rayTraceEntities(int, boolean)}
+-     */
+-    @Deprecated(forRemoval = true)
+-    @Nullable
+-    public com.destroystokyo.paper.entity.TargetEntityInfo getTargetEntityInfo(int maxDistance, boolean ignoreBlocks);
+-
+     /**
+      * Gets information about the entity being targeted
+      *
+@@ -262,7 +169,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *     line of sight
+      */
+     @NotNull
+-    public List<Block> getLastTwoTargetBlocks(@Nullable Set<Material> transparent, int maxDistance);
++    List<Block> getLastTwoTargetBlocks(@Nullable Set<Material> transparent, int maxDistance);
+ 
+     /**
+      * Gets the block that the living entity has targeted.
+@@ -278,7 +185,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @see #getTargetBlockExact(int, org.bukkit.FluidCollisionMode)
+      */
+     @Nullable
+-    public Block getTargetBlockExact(int maxDistance);
++    Block getTargetBlockExact(int maxDistance);
+ 
+     /**
+      * Gets the block that the living entity has targeted.
+@@ -294,7 +201,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @see #rayTraceBlocks(double, FluidCollisionMode)
+      */
+     @Nullable
+-    public Block getTargetBlockExact(int maxDistance, @NotNull FluidCollisionMode fluidCollisionMode);
++    Block getTargetBlockExact(int maxDistance, @NotNull FluidCollisionMode fluidCollisionMode);
+ 
+     /**
+      * Performs a ray trace that provides information on the targeted block.
+@@ -311,7 +218,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @see #rayTraceBlocks(double, FluidCollisionMode)
+      */
+     @Nullable
+-    public RayTraceResult rayTraceBlocks(double maxDistance);
++    RayTraceResult rayTraceBlocks(double maxDistance);
+ 
+     /**
+      * Performs a ray trace that provides information on the targeted block.
+@@ -328,7 +235,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @see World#rayTraceBlocks(Location, Vector, double, FluidCollisionMode)
+      */
+     @Nullable
+-    public RayTraceResult rayTraceBlocks(double maxDistance, @NotNull FluidCollisionMode fluidCollisionMode);
++    RayTraceResult rayTraceBlocks(double maxDistance, @NotNull FluidCollisionMode fluidCollisionMode);
+ 
+     /**
+      * Returns the amount of air that the living entity has remaining, in
+@@ -336,81 +243,49 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return amount of air remaining
+      */
+-    public int getRemainingAir();
++    int getRemainingAir();
+ 
+     /**
+      * Sets the amount of air that the living entity has remaining, in ticks.
+      *
+      * @param ticks amount of air remaining
+      */
+-    public void setRemainingAir(int ticks);
++    void setRemainingAir(int ticks);
+ 
+     /**
+      * Returns the maximum amount of air the living entity can have, in ticks.
+      *
+      * @return maximum amount of air
+      */
+-    public int getMaximumAir();
++    int getMaximumAir();
+ 
+     /**
+      * Sets the maximum amount of air the living entity can have, in ticks.
+      *
+      * @param ticks maximum amount of air
+      */
+-    public void setMaximumAir(int ticks);
+-
+-    /**
+-     * Gets the item that the player is using (eating food, drawing back a bow,
+-     * blocking, etc.)
+-     *
+-     * @return the item being used by the player, or null if they are not using
+-     * an item
+-     * @deprecated Use {@link #getActiveItem()}
+-     */
+-    @Nullable
+-    @Deprecated(forRemoval = true, since = "1.20.4") // Paper
+-    public ItemStack getItemInUse();
+-
+-    /**
+-     * Gets the number of ticks remaining for the current item's usage.
+-     *
+-     * @return The number of ticks remaining
+-     * @deprecated use {@link #getActiveItemRemainingTime()}
+-     */
+-    @Deprecated(forRemoval = true, since = "1.20.4") // Paper
+-    public int getItemInUseTicks();
+-
+-    /**
+-     * Sets the number of ticks that remain for the current item's usage.
+-     * Applies to items that take time to use, like eating food, drawing a bow,
+-     * or throwing a trident.
+-     *
+-     * @param ticks The number of ticks remaining
+-     * @deprecated use {@link #setActiveItemRemainingTime(int)}
+-     */
+-    @Deprecated(forRemoval = true, since = "1.20.4") // Paper
+-    public void setItemInUseTicks(int ticks);
++    void setMaximumAir(int ticks);
+ 
+     /**
+      * Gets the time in ticks until the next arrow leaves the entity's body.
+      *
+      * @return ticks until arrow leaves
+      */
+-    public int getArrowCooldown();
++    int getArrowCooldown();
+ 
+     /**
+      * Sets the time in ticks until the next arrow leaves the entity's body.
+      *
+      * @param ticks time until arrow leaves
+      */
+-    public void setArrowCooldown(int ticks);
++    void setArrowCooldown(int ticks);
+ 
+     /**
+      * Gets the amount of arrows in an entity's body.
+      *
+      * @return amount of arrows in body
+      */
+-    public int getArrowsInBody();
++    int getArrowsInBody();
+ 
+     // Paper start
+     /**
+@@ -457,28 +332,28 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return ticks until bee stinger leaves
+      */
+-    public int getBeeStingerCooldown();
++    int getBeeStingerCooldown();
+ 
+     /**
+      * Sets the time in ticks until the next stinger leaves the entity's body.
+      *
+      * @param ticks time until bee stinger leaves
+      */
+-    public void setBeeStingerCooldown(int ticks);
++    void setBeeStingerCooldown(int ticks);
+ 
+     /**
+      * Gets the amount of bee stingers in an entity's body.
+      *
+      * @return amount of bee stingers in body
+      */
+-    public int getBeeStingersInBody();
++    int getBeeStingersInBody();
+ 
+     /**
+      * Set the amount of bee stingers in the entity's body.
+      *
+      * @param count amount of bee stingers in entity's body
+      */
+-    public void setBeeStingersInBody(int count);
++    void setBeeStingersInBody(int count);
+ 
+     /**
+      * Sets the amount of ticks before the next bee stinger gets removed from the entities body.
+@@ -505,14 +380,14 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return maximum no damage ticks
+      */
+-    public int getMaximumNoDamageTicks();
++    int getMaximumNoDamageTicks();
+ 
+     /**
+      * Sets the living entity's current maximum no damage ticks.
+      *
+      * @param ticks maximum amount of no damage ticks
+      */
+-    public void setMaximumNoDamageTicks(int ticks);
++    void setMaximumNoDamageTicks(int ticks);
+ 
+     /**
+      * Returns the living entity's last damage taken in the current no damage
+@@ -523,28 +398,28 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return damage taken since the last no damage ticks time period
+      */
+-    public double getLastDamage();
++    double getLastDamage();
+ 
+     /**
+      * Sets the damage dealt within the current no damage ticks time period.
+      *
+      * @param damage amount of damage
+      */
+-    public void setLastDamage(double damage);
++    void setLastDamage(double damage);
+ 
+     /**
+      * Returns the living entity's current no damage ticks.
+      *
+      * @return amount of no damage ticks
+      */
+-    public int getNoDamageTicks();
++    int getNoDamageTicks();
+ 
+     /**
+      * Sets the living entity's current no damage ticks.
+      *
+      * @param ticks amount of no damage ticks
+      */
+-    public void setNoDamageTicks(int ticks);
++    void setNoDamageTicks(int ticks);
+ 
+     /**
+      * Get the ticks that this entity has performed no action.
+@@ -556,7 +431,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return amount of no action ticks
+      */
+-    public int getNoActionTicks();
++    int getNoActionTicks();
+ 
+     /**
+      * Set the ticks that this entity has performed no action.
+@@ -568,7 +443,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @param ticks amount of no action ticks
+      */
+-    public void setNoActionTicks(int ticks);
++    void setNoActionTicks(int ticks);
+ 
+     /**
+      * Gets the player identified as the killer of the living entity.
+@@ -578,7 +453,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return killer player, or null if none found
+      */
+     @Nullable
+-    public Player getKiller();
++    Player getKiller();
+ 
+     // Paper start
+     /**
+@@ -586,7 +461,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @param killer player
+      */
+-    public void setKiller(@Nullable Player killer);
++    void setKiller(@Nullable Player killer);
+     // Paper end
+ 
+     /**
+@@ -598,22 +473,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param effect PotionEffect to be added
+      * @return whether the effect could be added
+      */
+-    public boolean addPotionEffect(@NotNull PotionEffect effect);
+-
+-    /**
+-     * Adds the given {@link PotionEffect} to the living entity.
+-     * <p>
+-     * Only one potion effect can be present for a given {@link
+-     * PotionEffectType}.
+-     *
+-     * @param effect PotionEffect to be added
+-     * @param force whether conflicting effects should be removed
+-     * @return whether the effect could be added
+-     * @deprecated no need to force since multiple effects of the same type are
+-     * now supported.
+-     */
+-    @Deprecated
+-    public boolean addPotionEffect(@NotNull PotionEffect effect, boolean force);
++    boolean addPotionEffect(@NotNull PotionEffect effect);
+ 
+     /**
+      * Attempts to add all of the given {@link PotionEffect} to the living
+@@ -625,7 +485,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param effects the effects to add
+      * @return whether all of the effects could be added
+      */
+-    public boolean addPotionEffects(@NotNull Collection<PotionEffect> effects);
++    boolean addPotionEffects(@NotNull Collection<PotionEffect> effects);
+ 
+     /**
+      * Returns whether the living entity already has an existing effect of
+@@ -634,7 +494,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param type the potion type to check
+      * @return whether the living entity has this potion effect active on them
+      */
+-    public boolean hasPotionEffect(@NotNull PotionEffectType type);
++    boolean hasPotionEffect(@NotNull PotionEffectType type);
+ 
+     /**
+      * Returns the active {@link PotionEffect} of the specified type.
+@@ -645,14 +505,14 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the effect active on this entity, or null if not active.
+      */
+     @Nullable
+-    public PotionEffect getPotionEffect(@NotNull PotionEffectType type);
++    PotionEffect getPotionEffect(@NotNull PotionEffectType type);
+ 
+     /**
+      * Removes any effects present of the given {@link PotionEffectType}.
+      *
+      * @param type the potion type to remove
+      */
+-    public void removePotionEffect(@NotNull PotionEffectType type);
++    void removePotionEffect(@NotNull PotionEffectType type);
+ 
+     /**
+      * Returns all currently active {@link PotionEffect}s on the living
+@@ -661,7 +521,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return a collection of {@link PotionEffect}s
+      */
+     @NotNull
+-    public Collection<PotionEffect> getActivePotionEffects();
++    Collection<PotionEffect> getActivePotionEffects();
+ 
+     // Paper start - LivingEntity#clearActivePotionEffects();
+     /**
+@@ -681,7 +541,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param other the entity to determine line of sight to
+      * @return true if there is a line of sight, false if not
+      */
+-    public boolean hasLineOfSight(@NotNull Entity other);
++    boolean hasLineOfSight(@NotNull Entity other);
+ 
+     // Paper start
+     /**
+@@ -693,7 +553,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param location the location to determine line of sight to
+      * @return true if there is a line of sight, false if not
+      */
+-    public boolean hasLineOfSight(@NotNull Location location);
++    boolean hasLineOfSight(@NotNull Location location);
+     // Paper end
+ 
+     /**
+@@ -703,7 +563,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return true if the living entity is removed when away from players
+      */
+-    public boolean getRemoveWhenFarAway();
++    boolean getRemoveWhenFarAway();
+ 
+     /**
+      * Sets whether or not the living entity despawns when away from players
+@@ -711,7 +571,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @param remove the removal status
+      */
+-    public void setRemoveWhenFarAway(boolean remove);
++    void setRemoveWhenFarAway(boolean remove);
+ 
+     /**
+      * Gets the inventory with the equipment worn by the living entity.
+@@ -719,28 +579,28 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the living entity's inventory
+      */
+     @Nullable
+-    public EntityEquipment getEquipment();
++    EntityEquipment getEquipment();
+ 
+     /**
+      * Sets whether or not the living entity can pick up items.
+      *
+      * @param pickup whether or not the living entity can pick up items
+      */
+-    public void setCanPickupItems(boolean pickup);
++    void setCanPickupItems(boolean pickup);
+ 
+     /**
+      * Gets if the living entity can pick up items.
+      *
+      * @return whether or not the living entity can pick up items
+      */
+-    public boolean getCanPickupItems();
++    boolean getCanPickupItems();
+ 
+     /**
+      * Returns whether the entity is currently leashed.
+      *
+      * @return whether the entity is leashed
+      */
+-    public boolean isLeashed();
++    boolean isLeashed();
+ 
+     /**
+      * Gets the entity that is currently leading this entity.
+@@ -749,7 +609,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @throws IllegalStateException if not currently leashed
+      */
+     @NotNull
+-    public Entity getLeashHolder() throws IllegalStateException;
++    Entity getLeashHolder() throws IllegalStateException;
+ 
+     /**
+      * Sets the leash on this entity to be held by the supplied entity.
+@@ -761,13 +621,13 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param holder the entity to leash this entity to, or null to unleash
+      * @return whether the operation was successful
+      */
+-    public boolean setLeashHolder(@Nullable Entity holder);
++    boolean setLeashHolder(@Nullable Entity holder);
+ 
+     /**
+      * Checks to see if an entity is gliding, such as using an Elytra.
+      * @return True if this entity is gliding.
+      */
+-    public boolean isGliding();
++    boolean isGliding();
+ 
+     /**
+      * Makes entity start or stop gliding. This will work even if an Elytra
+@@ -775,46 +635,28 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * unless an event-cancelling mechanism is put in place.
+      * @param gliding True if the entity is gliding.
+      */
+-    public void setGliding(boolean gliding);
+-
+-    /**
+-     * Checks to see if an entity is swimming.
+-     *
+-     * @return True if this entity is swimming.
+-     */
+-    public boolean isSwimming();
+-
+-    /**
+-     * Makes entity start or stop swimming.
+-     *
+-     * This may have unexpected results if the entity is not in water.
+-     *
+-     * @param swimming True if the entity is swimming.
+-     * @deprecated This does nothing and is immediately reverted by the server, in the next tick <!-- Paper - future note: should wait a mojang input client/server side -->
+-     */
+-    @Deprecated // Paper
+-    public void setSwimming(boolean swimming);
++    void setGliding(boolean gliding);
+ 
+     /**
+      * Checks to see if an entity is currently using the Riptide enchantment.
+      *
+      * @return True if this entity is currently riptiding.
+      */
+-    public boolean isRiptiding();
++    boolean isRiptiding();
+ 
+     /**
+      * Returns whether this entity is slumbering.
+      *
+      * @return slumber state
+      */
+-    public boolean isSleeping();
++    boolean isSleeping();
+ 
+     /**
+      * Gets if the entity is climbing.
+      *
+      * @return if the entity is climbing
+      */
+-    public boolean isClimbing();
++    boolean isClimbing();
+ 
+     /**
+      * Sets whether an entity will have AI.
+@@ -843,7 +685,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @param target entity to attack.
+      */
+-    public void attack(@NotNull Entity target);
++    void attack(@NotNull Entity target);
+ 
+     /**
+      * Makes this entity swing their main hand.
+@@ -851,7 +693,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * This method does nothing if this entity does not have an animation for
+      * swinging their main hand.
+      */
+-    public void swingMainHand();
++    void swingMainHand();
+ 
+     /**
+      * Makes this entity swing their off hand.
+@@ -859,7 +701,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * This method does nothing if this entity does not have an animation for
+      * swinging their off hand.
+      */
+-    public void swingOffHand();
++    void swingOffHand();
+ 
+     /**
+      * Makes this entity flash red as if they were damaged.
+@@ -868,7 +710,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * entity, where 0 is in front of the player, 90 is to the right, 180 is
+      * behind, and 270 is to the left
+      */
+-    public void playHurtAnimation(float yaw);
++    void playHurtAnimation(float yaw);
+ 
+     /**
+      * Set if this entity will be subject to collisions with other entities.
+@@ -968,7 +810,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the hurt sound, or null if the entity does not make any sound
+      */
+     @Nullable
+-    public Sound getHurtSound();
++    Sound getHurtSound();
+ 
+     /**
+      * Get the {@link Sound} this entity will make on death.
+@@ -976,7 +818,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the death sound, or null if the entity does not make any sound
+      */
+     @Nullable
+-    public Sound getDeathSound();
++    Sound getDeathSound();
+ 
+     /**
+      * Get the {@link Sound} this entity will make when falling from the given
+@@ -989,7 +831,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @see #getFallDamageSoundBig()
+      */
+     @NotNull
+-    public Sound getFallDamageSound(int fallHeight);
++    Sound getFallDamageSound(int fallHeight);
+ 
+     /**
+      * Get the {@link Sound} this entity will make when falling from a small
+@@ -998,7 +840,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the fall damage sound
+      */
+     @NotNull
+-    public Sound getFallDamageSoundSmall();
++    Sound getFallDamageSoundSmall();
+ 
+     /**
+      * Get the {@link Sound} this entity will make when falling from a large
+@@ -1007,7 +849,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the fall damage sound
+      */
+     @NotNull
+-    public Sound getFallDamageSoundBig();
++    Sound getFallDamageSoundBig();
+ 
+     /**
+      * Get the {@link Sound} this entity will make when drinking the given
+@@ -1017,7 +859,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the drinking sound
+      */
+     @NotNull
+-    public Sound getDrinkingSound(@NotNull ItemStack itemStack);
++    Sound getDrinkingSound(@NotNull ItemStack itemStack);
+ 
+     /**
+      * Get the {@link Sound} this entity will make when eating the given
+@@ -1027,7 +869,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the eating sound
+      */
+     @NotNull
+-    public Sound getEatingSound(@NotNull ItemStack itemStack);
++    Sound getEatingSound(@NotNull ItemStack itemStack);
+ 
+     /**
+      * Returns true if this entity can breathe underwater and will not take
+@@ -1035,7 +877,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      *
+      * @return <code>true</code> if the entity can breathe underwater
+      */
+-    public boolean canBreatheUnderwater();
++    boolean canBreatheUnderwater();
+ 
+     /**
+      * Get the category to which this entity belongs.
+@@ -1046,7 +888,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return the entity category
+      */
+     @NotNull
+-    public EntityCategory getCategory();
++    EntityCategory getCategory();
+ 
+     /**
+      * Sets whether the entity is invisible or not.
+@@ -1054,7 +896,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param invisible If the entity is invisible
+      */
+     @Override // Paper - move invisibility up to Entity
+-    public void setInvisible(boolean invisible);
++    void setInvisible(boolean invisible);
+ 
+     /**
+      * Gets whether the entity is invisible or not.
+@@ -1062,26 +904,9 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @return Whether the entity is invisible
+      */
+     @Override // Paper - move invisibility up to Entity
+-    public boolean isInvisible();
++    boolean isInvisible();
+ 
+     // Paper start
+-    /**
+-     * Get the number of arrows stuck in this entity
+-     * @return Number of arrows stuck
+-     * @deprecated use {@link #getArrowsInBody()}
+-     */
+-    @Deprecated
+-    int getArrowsStuck();
+-
+-    /**
+-     * Set the number of arrows stuck in this entity
+-     *
+-     * @param arrows Number of arrows to stick in this entity
+-     * @deprecated use {@link #setArrowsInBody(int, boolean)}. <b>This method previously fired {@link org.bukkit.event.entity.ArrowBodyCountChangeEvent} so if
+-     * you want to retain exact functionality, pass {@code true} for {@code fireEvent}.</b>
+-     */
+-    @Deprecated
+-    void setArrowsStuck(int arrows);
+ 
+     /**
+      * Get the delay (in ticks) before blocking is effective for this entity
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index c6cb4f17469a8f2e60dd3e28d41402851ce5fb21..5dc521250dd8c4078aff27e6a2afd4077d85effb 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -8,6 +8,8 @@ import java.util.Collection;
+ import java.util.Date;
+ import java.util.Map;
+ import java.util.UUID;
++
++import net.kyori.adventure.text.Component;
+ import org.bukkit.BanEntry;
+ import org.bukkit.DyeColor;
+ import org.bukkit.Effect;
+@@ -45,7 +47,6 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.PluginMessageRecipient;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+-import org.bukkit.profile.PlayerProfile;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.NotNull;
+@@ -95,34 +96,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     @NotNull
+     @Override
+-    public String getName();
+-
+-    /**
+-     * Gets the "friendly" name to display of this player. This may include
+-     * color.
+-     * <p>
+-     * Note that this name will not be displayed in game, only in chat and
+-     * places defined by plugins.
+-     *
+-     * @return the friendly name
+-     * @deprecated in favour of {@link #displayName()}
+-     */
+-    @Deprecated // Paper
+-    @NotNull
+-    public String getDisplayName();
++    String getName();
+ 
+-    /**
+-     * Sets the "friendly" name to display of this player. This may include
+-     * color.
+-     * <p>
+-     * Note that this name will not be displayed in game, only in chat and
+-     * places defined by plugins.
+-     *
+-     * @param name The new display name.
+-     * @deprecated in favour of {@link #displayName(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void setDisplayName(@Nullable String name);
+ 
+     // Paper start
+     /**
+@@ -155,82 +130,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     net.kyori.adventure.text.@Nullable Component playerListFooter();
+     // Paper end
+-    /**
+-     * Gets the name that is shown on the player list.
+-     *
+-     * @return the player list name
+-     * @deprecated in favour of {@link #playerListName()}
+-     */
+-    @NotNull
+-    @Deprecated // Paper
+-    public String getPlayerListName();
+-
+-    /**
+-     * Sets the name that is shown on the in-game player list.
+-     * <p>
+-     * If the value is null, the name will be identical to {@link #getName()}.
+-     *
+-     * @param name new player list name
+-     * @deprecated in favour of {@link #playerListName(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void setPlayerListName(@Nullable String name);
+-
+-    /**
+-     * Gets the currently displayed player list header for this player.
+-     *
+-     * @return player list header or null
+-     * @deprecated in favour of {@link #playerListHeader()}
+-     */
+-    @Deprecated // Paper
+-    @Nullable
+-    public String getPlayerListHeader();
+-
+-    /**
+-     * Gets the currently displayed player list footer for this player.
+-     *
+-     * @return player list header or null
+-     * @deprecated in favour of {@link #playerListFooter()}
+-     */
+-    @Deprecated // Paper
+-    @Nullable
+-    public String getPlayerListFooter();
+-
+-    /**
+-     * Sets the currently displayed player list header for this player.
+-     *
+-     * @param header player list header, null for empty
+-     * @deprecated in favour of {@link #sendPlayerListHeader(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void setPlayerListHeader(@Nullable String header);
+-
+-    /**
+-     * Sets the currently displayed player list footer for this player.
+-     *
+-     * @param footer player list footer, null for empty
+-     * @deprecated in favour of {@link #sendPlayerListFooter(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void setPlayerListFooter(@Nullable String footer);
+-
+-    /**
+-     * Sets the currently displayed player list header and footer for this
+-     * player.
+-     *
+-     * @param header player list header, null for empty
+-     * @param footer player list footer, null for empty
+-     * @deprecated in favour of {@link #sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void setPlayerListHeaderFooter(@Nullable String header, @Nullable String footer);
+ 
+     /**
+      * Set the target of the player's compass.
+      *
+      * @param loc Location to point to
+      */
+-    public void setCompassTarget(@NotNull Location loc);
++    void setCompassTarget(@NotNull Location loc);
+ 
+     /**
+      * Get the previously set compass target.
+@@ -238,7 +144,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return location of the target
+      */
+     @NotNull
+-    public Location getCompassTarget();
++    Location getCompassTarget();
+ 
+     /**
+      * Gets the socket address of this player
+@@ -246,7 +152,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return the player's address
+      */
+     @Nullable
+-    public InetSocketAddress getAddress();
++    InetSocketAddress getAddress();
+ 
+     /**
+      * Sends this sender a message raw
+@@ -254,16 +160,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param message Message to be displayed
+      */
+     @Override
+-    public void sendRawMessage(@NotNull String message);
+-
+-    /**
+-     * Kicks player with custom kick message.
+-     *
+-     * @param message kick message
+-     * @deprecated in favour of {@link #kick(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated // Paper
+-    public void kickPlayer(@Nullable String message);
++    void sendRawMessage(@NotNull String message);
+ 
+     // Paper start
+     /**
+@@ -301,7 +198,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
+ 
+     /**
+      * Adds this user to the {@link ProfileBanList}. If a previous ban exists, this will
+@@ -317,7 +214,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
+ 
+     /**
+      * Adds this user to the {@link ProfileBanList}. If a previous ban exists, this will
+@@ -333,7 +230,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
++    <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source, boolean kickPlayer); // Paper - fix ban list API
+ 
+     /**
+      * Adds this user's current IP address to the {@link IpBanList}. If a previous ban exists, this will
+@@ -349,7 +246,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Date expires, @Nullable String source, boolean kickPlayer);
++    BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Date expires, @Nullable String source, boolean kickPlayer);
+ 
+     /**
+      * Adds this user's current IP address to the {@link IpBanList}. If a previous ban exists, this will
+@@ -365,7 +262,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Instant expires, @Nullable String source, boolean kickPlayer);
++    BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Instant expires, @Nullable String source, boolean kickPlayer);
+ 
+     /**
+      * Adds this user's current IP address to the {@link IpBanList}. If a previous ban exists, this will
+@@ -381,14 +278,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     (updated) previous ban
+      */
+     @Nullable
+-    public BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Duration duration, @Nullable String source, boolean kickPlayer);
++    BanEntry<InetAddress> banIp(@Nullable String reason, @Nullable Duration duration, @Nullable String source, boolean kickPlayer);
+ 
+     /**
+      * Says a message (or runs a command).
+      *
+      * @param msg message to print
+      */
+-    public void chat(@NotNull String msg);
++    void chat(@NotNull String msg);
+ 
+     /**
+      * Makes the player perform the given command
+@@ -396,21 +293,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param command Command to perform
+      * @return true if the command was successful, otherwise false
+      */
+-    public boolean performCommand(@NotNull String command);
+-
+-    /**
+-     * Returns true if the entity is supported by a block.
+-     *
+-     * This value is a state updated by the client after each movement.
+-     *
+-     * @return True if entity is on ground.
+-     * @deprecated This value is controlled only by the client and is therefore
+-     * unreliable and vulnerable to spoofing and/or desync depending on the
+-     * context/time which it is accessed
+-     */
+-    @Override
+-    @Deprecated
+-    public boolean isOnGround();
++    boolean performCommand(@NotNull String command);
+ 
+     /**
+      * Returns if the player is in sneak mode
+@@ -418,7 +301,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return true if player is in sneak mode
+      */
+     @Override // Paper
+-    public boolean isSneaking();
++    boolean isSneaking();
+ 
+     /**
+      * Sets the sneak mode the player
+@@ -426,28 +309,28 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param sneak true if player should appear sneaking
+      */
+     @Override // Paper
+-    public void setSneaking(boolean sneak);
++    void setSneaking(boolean sneak);
+ 
+     /**
+      * Gets whether the player is sprinting or not.
+      *
+      * @return true if player is sprinting.
+      */
+-    public boolean isSprinting();
++    boolean isSprinting();
+ 
+     /**
+      * Sets whether the player is sprinting or not.
+      *
+      * @param sprinting true if the player should be sprinting
+      */
+-    public void setSprinting(boolean sprinting);
++    void setSprinting(boolean sprinting);
+ 
+     /**
+      * Saves the players current location, health, inventory, motion, and
+      * other information into the &lt;uuid&gt;.dat file, in the
+      * &lt;level-name&gt;/playerdata/ folder.
+      */
+-    public void saveData();
++    void saveData();
+ 
+     /**
+      * Loads the players current location, health, inventory, motion, and
+@@ -457,7 +340,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * Note: This will overwrite the players current inventory, health,
+      * motion, etc, with the state from the saved dat file.
+      */
+-    public void loadData();
++    void loadData();
+ 
+     /**
+      * Sets whether the player is ignored as not sleeping. If everyone is
+@@ -467,29 +350,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param isSleeping Whether to ignore.
+      */
+-    public void setSleepingIgnored(boolean isSleeping);
++    void setSleepingIgnored(boolean isSleeping);
+ 
+     /**
+      * Returns whether the player is sleeping ignored.
+      *
+      * @return Whether player is ignoring sleep.
+      */
+-    public boolean isSleepingIgnored();
+-
+-    /**
+-     * Gets the Location where the player will spawn at their bed, null if
+-     * they have not slept in one or their current bed spawn is invalid.
+-     *
+-     * @return Bed Spawn Location if bed exists, otherwise null.
+-     *
+-     * @see #getRespawnLocation()
+-     * @deprecated Misleading name. This method also returns the location of
+-     * respawn anchors.
+-     */
+-    @Nullable
+-    @Override
+-    @Deprecated
+-    public Location getBedSpawnLocation();
++    boolean isSleepingIgnored();
+ 
+     /**
+      * Gets the Location where the player will spawn at, null if they
+@@ -499,40 +367,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     @Nullable
+     @Override
+-    public Location getRespawnLocation();
+-
+-    /**
+-     * Sets the Location where the player will spawn at their bed.
+-     *
+-     * @param location where to set the respawn location
+-     *
+-     * @see #setRespawnLocation(Location)
+-     * @deprecated Misleading name. This method sets the player's respawn
+-     * location more generally and is not limited to beds.
+-     */
+-    @Deprecated
+-    public void setBedSpawnLocation(@Nullable Location location);
++    Location getRespawnLocation();
+ 
+     /**
+      * Sets the Location where the player will respawn.
+      *
+      * @param location where to set the respawn location
+      */
+-    public void setRespawnLocation(@Nullable Location location);
+-
+-    /**
+-     * Sets the Location where the player will spawn at their bed.
+-     *
+-     * @param location where to set the respawn location
+-     * @param force whether to forcefully set the respawn location even if a
+-     *     valid bed is not present
+-     *
+-     * @see #setRespawnLocation(Location, boolean)
+-     * @deprecated Misleading name. This method sets the player's respawn
+-     * location more generally and is not limited to beds.
+-     */
+-    @Deprecated
+-    public void setBedSpawnLocation(@Nullable Location location, boolean force);
++    void setRespawnLocation(@Nullable Location location);
+ 
+     /**
+      * Sets the Location where the player will respawn.
+@@ -541,19 +383,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param force whether to forcefully set the respawn location even if a
+      *     valid respawn point is not present
+      */
+-    public void setRespawnLocation(@Nullable Location location, boolean force);
++    void setRespawnLocation(@Nullable Location location, boolean force);
+ 
+-    /**
+-     * Play a note for the player at a location. <br>
+-     * This <i>will</i> work with cake.
+-     *
+-     * @param loc The location to play the note
+-     * @param instrument The instrument ID.
+-     * @param note The note ID.
+-     * @deprecated Magic value
+-     */
+-    @Deprecated
+-    public void playNote(@NotNull Location loc, byte instrument, byte note);
+ 
+     /**
+      * Play a note for the player at a location. <br>
+@@ -564,7 +395,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param instrument The instrument
+      * @param note The note
+      */
+-    public void playNote(@NotNull Location loc, @NotNull Instrument instrument, @NotNull Note note);
++    void playNote(@NotNull Location loc, @NotNull Instrument instrument, @NotNull Note note);
+ 
+ 
+     /**
+@@ -577,7 +408,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull Sound sound, float volume, float pitch);
++    void playSound(@NotNull Location location, @NotNull Sound sound, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location.
+@@ -591,7 +422,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull String sound, float volume, float pitch);
++    void playSound(@NotNull Location location, @NotNull String sound, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location.
+@@ -604,7 +435,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch);
++    void playSound(@NotNull Location location, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location.
+@@ -619,7 +450,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch);
++    void playSound(@NotNull Location location, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location. For sounds with multiple
+@@ -634,7 +465,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param pitch The pitch of the sound
+      * @param seed The seed for the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
++    void playSound(@NotNull Location location, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
+ 
+     /**
+      * Play a sound for a player at the location. For sounds with multiple
+@@ -651,7 +482,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param pitch The pitch of the sound
+      * @param seed The seed for the sound
+      */
+-    public void playSound(@NotNull Location location, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
++    void playSound(@NotNull Location location, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
+ 
+     /**
+      * Play a sound for a player at the location of the entity.
+@@ -663,7 +494,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull Sound sound, float volume, float pitch);
++    void playSound(@NotNull Entity entity, @NotNull Sound sound, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location of the entity.
+@@ -675,7 +506,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull String sound, float volume, float pitch);
++    void playSound(@NotNull Entity entity, @NotNull String sound, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location of the entity.
+@@ -688,7 +519,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch);
++    void playSound(@NotNull Entity entity, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location of the entity.
+@@ -701,7 +532,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param volume The volume of the sound
+      * @param pitch The pitch of the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch);
++    void playSound(@NotNull Entity entity, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch);
+ 
+     /**
+      * Play a sound for a player at the location of the entity. For sounds with
+@@ -716,7 +547,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param pitch The pitch of the sound
+      * @param seed The seed for the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
++    void playSound(@NotNull Entity entity, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
+ 
+     /**
+      * Play a sound for a player at the location of the entity. For sounds with
+@@ -731,21 +562,21 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param pitch The pitch of the sound
+      * @param seed The seed for the sound
+      */
+-    public void playSound(@NotNull Entity entity, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
++    void playSound(@NotNull Entity entity, @NotNull String sound, @NotNull SoundCategory category, float volume, float pitch, long seed);
+ 
+     /**
+      * Stop the specified sound from playing.
+      *
+      * @param sound the sound to stop
+      */
+-    public void stopSound(@NotNull Sound sound);
++    void stopSound(@NotNull Sound sound);
+ 
+     /**
+      * Stop the specified sound from playing.
+      *
+      * @param sound the sound to stop
+      */
+-    public void stopSound(@NotNull String sound);
++    void stopSound(@NotNull String sound);
+ 
+     /**
+      * Stop the specified sound from playing.
+@@ -753,7 +584,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param sound the sound to stop
+      * @param category the category of the sound
+      */
+-    public void stopSound(@NotNull Sound sound, @Nullable SoundCategory category);
++    void stopSound(@NotNull Sound sound, @Nullable SoundCategory category);
+ 
+     /**
+      * Stop the specified sound from playing.
+@@ -761,30 +592,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param sound the sound to stop
+      * @param category the category of the sound
+      */
+-    public void stopSound(@NotNull String sound, @Nullable SoundCategory category);
++    void stopSound(@NotNull String sound, @Nullable SoundCategory category);
+ 
+     /**
+      * Stop the specified sound category from playing.
+      *
+      * @param category the sound category to stop
+      */
+-    public void stopSound(@NotNull SoundCategory category);
++    void stopSound(@NotNull SoundCategory category);
+ 
+     /**
+      * Stop all sounds from playing.
+      */
+-    public void stopAllSounds();
+-
+-    /**
+-     * Plays an effect to just this player.
+-     *
+-     * @param loc the location to play the effect at
+-     * @param effect the {@link Effect}
+-     * @param data a data bit needed for some effects
+-     * @deprecated Magic value
+-     */
+-    @Deprecated
+-    public void playEffect(@NotNull Location loc, @NotNull Effect effect, int data);
++    void stopAllSounds();
+ 
+     /**
+      * Plays an effect to just this player.
+@@ -794,7 +614,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param effect the {@link Effect}
+      * @param data a data bit needed for some effects
+      */
+-    public <T> void playEffect(@NotNull Location loc, @NotNull Effect effect, @Nullable T data);
++    <T> void playEffect(@NotNull Location loc, @NotNull Effect effect, @Nullable T data);
+ 
+     /**
+      * Force this player to break a Block using the item in their main hand.
+@@ -818,19 +638,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return true if the block was broken, false if the break failed
+      */
+-    public boolean breakBlock(@NotNull Block block);
+-
+-    /**
+-     * Send a block change. This fakes a block change packet for a user at a
+-     * certain location. This will not actually change the world in any way.
+-     *
+-     * @param loc The location of the changed block
+-     * @param material The new block
+-     * @param data The block data
+-     * @deprecated Magic value
+-     */
+-    @Deprecated
+-    public void sendBlockChange(@NotNull Location loc, @NotNull Material material, byte data);
++    boolean breakBlock(@NotNull Block block);
+ 
+     /**
+      * Send a block change. This fakes a block change packet for a user at a
+@@ -839,27 +647,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param loc The location of the changed block
+      * @param block The new block
+      */
+-    public void sendBlockChange(@NotNull Location loc, @NotNull BlockData block);
+-
+-    /**
+-     * Send a multi-block change. This fakes a block change packet for a user
+-     * at multiple locations. This will not actually change the world in any
+-     * way.
+-     * <p>
+-     * This method may send multiple packets to the client depending on the
+-     * blocks in the collection. A packet must be sent for each chunk section
+-     * modified, meaning one packet for each 16x16x16 block area. Even if only
+-     * one block is changed in two different chunk sections, two packets will
+-     * be sent.
+-     * <p>
+-     * Additionally, this method cannot guarantee the functionality of changes
+-     * being sent to the player in chunks not loaded by the client. It is the
+-     * responsibility of the caller to ensure that the client is within range
+-     * of the changed blocks or to handle any side effects caused as a result.
+-     *
+-     * @param blocks the block states to send to the player
+-     */
+-    public void sendBlockChanges(@NotNull Collection<BlockState> blocks);
++    void sendBlockChange(@NotNull Location loc, @NotNull BlockData block);
+ 
+     /**
+      * Send a multi-block change. This fakes a block change packet for a user
+@@ -878,13 +666,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * of the changed blocks or to handle any side effects caused as a result.
+      *
+      * @param blocks the block states to send to the player
+-     * @param suppressLightUpdates whether or not light updates should be
+-     * suppressed when updating the blocks on the client
+-     * @deprecated suppressLightUpdates is not functional in versions greater
+-     * than 1.19.4
+      */
+-    @Deprecated
+-    public void sendBlockChanges(@NotNull Collection<BlockState> blocks, boolean suppressLightUpdates);
++    void sendBlockChanges(@NotNull Collection<BlockState> blocks);
+ 
+     /**
+      * Send block damage. This fakes block break progress at a certain location
+@@ -895,7 +678,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param progress the progress from 0.0 - 1.0 where 0 is no damage and
+      * 1.0 is the most damaged
+      */
+-    public void sendBlockDamage(@NotNull Location loc, float progress);
++    void sendBlockDamage(@NotNull Location loc, float progress);
+ 
+     // Paper start
+     /**
+@@ -905,19 +688,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param blockChanges A map of the positions you want to change to their new block data
+      */
+     void sendMultiBlockChange(@NotNull Map<? extends io.papermc.paper.math.Position, BlockData> blockChanges);
+-
+-    /**
+-     * Send multiple block changes. This fakes a multi block change packet for each
+-     * chunk section that a block change occurs. This will not actually change the world in any way.
+-     *
+-     * @param blockChanges A map of the positions you want to change to their new block data
+-     * @param suppressLightUpdates Whether to suppress light updates or not
+-     * @deprecated suppressLightUpdates is no longer available in 1.20+, use {@link #sendMultiBlockChange(Map)}
+-     */
+-    @Deprecated
+-    default void sendMultiBlockChange(@NotNull Map<? extends io.papermc.paper.math.Position, BlockData> blockChanges, boolean suppressLightUpdates) {
+-        this.sendMultiBlockChange(blockChanges);
+-    }
+     // Paper end
+ 
+     /**
+@@ -934,7 +704,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * 1.0 is the most damaged
+      * @param source the entity to which the damage belongs
+      */
+-    public void sendBlockDamage(@NotNull Location loc, float progress, @NotNull Entity source);
++    void sendBlockDamage(@NotNull Location loc, float progress, @NotNull Entity source);
+ 
+     /**
+      * Send block damage. This fakes block break progress at a certain location
+@@ -951,7 +721,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param sourceId the entity id of the entity to which the damage belongs.
+      * Can be an id that does not associate directly with an existing or loaded entity.
+      */
+-    public void sendBlockDamage(@NotNull Location loc, float progress, int sourceId);
++    void sendBlockDamage(@NotNull Location loc, float progress, int sourceId);
+ 
+     /**
+      * Send an equipment change for the target entity. This will not
+@@ -962,7 +732,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param item the item to which the slot should be changed, or null to set
+      * it to air
+      */
+-    public void sendEquipmentChange(@NotNull LivingEntity entity, @NotNull EquipmentSlot slot, @Nullable ItemStack item);
++    void sendEquipmentChange(@NotNull LivingEntity entity, @NotNull EquipmentSlot slot, @Nullable ItemStack item);
+ 
+     /**
+      * Send multiple equipment changes for the target entity. This will not
+@@ -972,185 +742,12 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param items the slots to change, where the values are the items to which
+      * the slot should be changed. null values will set the slot to air
+      */
+-    public void sendEquipmentChange(@NotNull LivingEntity entity, @NotNull Map<EquipmentSlot, ItemStack> items);
++    void sendEquipmentChange(@NotNull LivingEntity entity, @NotNull Map<EquipmentSlot, ItemStack> items);
+ 
+     // Paper start
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated
+-    default void sendSignChange(@NotNull Location loc, @Nullable java.util.List<? extends net.kyori.adventure.text.Component> lines) throws IllegalArgumentException {
+-        this.sendSignChange(loc, lines, DyeColor.BLACK);
+-    }
+ 
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @param dyeColor the color of the sign
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if dyeColor is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated
+-    default void sendSignChange(@NotNull Location loc, @Nullable java.util.List<? extends net.kyori.adventure.text.Component> lines, @NotNull DyeColor dyeColor) throws IllegalArgumentException {
+-        this.sendSignChange(loc, lines, dyeColor, false);
+-    }
+-
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @param hasGlowingText whether the text of the sign should glow as if dyed with a glowing ink sac
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if dyeColor is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated
+-    default void sendSignChange(@NotNull Location loc, @Nullable java.util.List<? extends net.kyori.adventure.text.Component> lines, boolean hasGlowingText) throws IllegalArgumentException {
+-        this.sendSignChange(loc, lines, DyeColor.BLACK, hasGlowingText);
+-    }
+-
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @param dyeColor the color of the sign
+-     * @param hasGlowingText whether the text of the sign should glow as if dyed with a glowing ink sac
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if dyeColor is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated
+-    void sendSignChange(@NotNull Location loc, @Nullable java.util.List<? extends net.kyori.adventure.text.Component> lines, @NotNull DyeColor dyeColor, boolean hasGlowingText)
+-        throws IllegalArgumentException;
+     // Paper end
+ 
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.block.data.BlockData)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     * <p>
+-     * To change all attributes of a sign, including the back Side, use
+-     * {@link #sendBlockUpdate(org.bukkit.Location, org.bukkit.block.TileState)}.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated // Paper
+-    public void sendSignChange(@NotNull Location loc, @Nullable String[] lines) throws IllegalArgumentException;
+-
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.block.data.BlockData)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     * <p>
+-     * To change all attributes of a sign, including the back Side, use
+-     * {@link #sendBlockUpdate(org.bukkit.Location, org.bukkit.block.TileState)}.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @param dyeColor the color of the sign
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if dyeColor is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated // Paper
+-    public void sendSignChange(@NotNull Location loc, @Nullable String[] lines, @NotNull DyeColor dyeColor) throws IllegalArgumentException;
+-
+-    /**
+-     * Send a sign change. This fakes a sign change packet for a user at
+-     * a certain location. This will not actually change the world in any way.
+-     * This method will use a sign at the location's block or a faked sign
+-     * sent via
+-     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.block.data.BlockData)}.
+-     * <p>
+-     * If the client does not have a sign at the given location it will
+-     * display an error message to the user.
+-     * <p>
+-     * To change all attributes of a sign, including the back Side, use
+-     * {@link #sendBlockUpdate(org.bukkit.Location, org.bukkit.block.TileState)}.
+-     *
+-     * @param loc the location of the sign
+-     * @param lines the new text on the sign or null to clear it
+-     * @param dyeColor the color of the sign
+-     * @param hasGlowingText if the sign's text should be glowing
+-     * @throws IllegalArgumentException if location is null
+-     * @throws IllegalArgumentException if dyeColor is null
+-     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+-     * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
+-     * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
+-     * (constructed e.g. via {@link Material#createBlockData()})
+-     */
+-    @Deprecated // Paper
+-    public void sendSignChange(@NotNull Location loc, @Nullable String[] lines, @NotNull DyeColor dyeColor, boolean hasGlowingText) throws IllegalArgumentException;
+-
+     /**
+      * Send a TileState change. This fakes a TileState change for a user at
+      * the given location. This will not actually change the world in any way.
+@@ -1169,7 +766,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalArgumentException if tileState is null
+      */
+     @ApiStatus.Experimental
+-    public void sendBlockUpdate(@NotNull Location loc, @NotNull TileState tileState) throws IllegalArgumentException;
++    void sendBlockUpdate(@NotNull Location loc, @NotNull TileState tileState) throws IllegalArgumentException;
+ 
+     /**
+      * Change a potion effect for the target entity. This will not actually
+@@ -1183,7 +780,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param entity the entity whose potion effects to change
+      * @param effect the effect to change
+      */
+-    public void sendPotionEffectChange(@NotNull LivingEntity entity, @NotNull PotionEffect effect);
++    void sendPotionEffectChange(@NotNull LivingEntity entity, @NotNull PotionEffect effect);
+ 
+     /**
+      * Remove a potion effect for the target entity. This will not actually
+@@ -1195,7 +792,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param entity the entity whose potion effects to change
+      * @param type the effect type to remove
+      */
+-    public void sendPotionEffectChangeRemove(@NotNull LivingEntity entity, @NotNull PotionEffectType type);
++    void sendPotionEffectChangeRemove(@NotNull LivingEntity entity, @NotNull PotionEffectType type);
+ 
+     /**
+      * Render a map and send it to the player in its entirety. This may be
+@@ -1203,7 +800,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param map The map to be sent
+      */
+-    public void sendMap(@NotNull MapView map);
++    void sendMap(@NotNull MapView map);
+ 
+     // Paper start
+     /**
+@@ -1221,7 +818,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @see #setHasSeenWinScreen(boolean) 
+      * @see <a href="https://minecraft.wiki/wiki/End_Poem#Technical_details">https://minecraft.wiki/wiki/End_Poem#Technical_details</a>
+      */
+-    public void showWinScreen();
++    void showWinScreen();
+ 
+     /**
+      * Returns whether this player has seen the win screen before.
+@@ -1232,7 +829,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @see #showWinScreen()
+      * @see <a href="https://minecraft.wiki/wiki/End_Poem">https://minecraft.wiki/wiki/End_Poem</a>
+      */
+-    public boolean hasSeenWinScreen();
++    boolean hasSeenWinScreen();
+ 
+     /**
+      * Changes whether this player has seen the win screen before.
+@@ -1243,383 +840,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @see #showWinScreen()
+      * @see <a href="https://minecraft.wiki/wiki/End_Poem">https://minecraft.wiki/wiki/End_Poem</a>
+      */
+-    public void setHasSeenWinScreen(boolean hasSeenWinScreen);
+-    // Paper end
+-
+-    // Paper start
+-    /**
+-     * Permanently Bans the Profile and IP address currently used by the player.
+-     *
+-     * @param reason Reason for ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    // For reference, Bukkit defines this as nullable, while they impl isn't, we'll follow API.
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerFull(@Nullable String reason) {
+-        return banPlayerFull(reason, null, null);
+-    }
+-
+-    /**
+-     * Permanently Bans the Profile and IP address currently used by the player.
+-     *
+-     * @param reason Reason for ban
+-     * @param source Source of ban, or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerFull(@Nullable String reason, @Nullable String source) {
+-        return banPlayerFull(reason, null, source);
+-    }
+-
+-    /**
+-     * Bans the Profile and IP address currently used by the player.
+-     *
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerFull(@Nullable String reason, @Nullable java.util.Date expires) {
+-        return banPlayerFull(reason, expires, null);
+-    }
+-
+-    /**
+-     * Bans the Profile and IP address currently used by the player.
+-     *
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @param source Source of the ban, or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerFull(@Nullable String reason, @Nullable java.util.Date expires, @Nullable String source) {
+-        banPlayer(reason, expires, source);
+-        return banPlayerIP(reason, expires, source, true);
+-    }
+-
+-    /**
+-     * Permanently Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     *
+-     * @param reason Reason for ban
+-     * @param kickPlayer Whether or not to kick the player afterwards
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, boolean kickPlayer) {
+-        return banPlayerIP(reason, null, null, kickPlayer);
+-    }
+-
+-    /**
+-     * Permanently Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for ban
+-     * @param source Source of ban, or null for default
+-     * @param kickPlayer Whether or not to kick the player afterwards
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable String source, boolean kickPlayer) {
+-        return banPlayerIP(reason, null, source, kickPlayer);
+-    }
+-
+-    /**
+-     * Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @param kickPlayer Whether or not to kick the player afterwards
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable java.util.Date expires, boolean kickPlayer) {
+-        return banPlayerIP(reason, expires, null, kickPlayer);
+-    }
+-
+-    /**
+-     * Permanently Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     *
+-     * @param reason Reason for ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason) {
+-        return banPlayerIP(reason, null, null);
+-    }
+-
+-    /**
+-     * Permanently Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for ban
+-     * @param source Source of ban, or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable String source) {
+-        return banPlayerIP(reason, null, source);
+-    }
+-
+-    /**
+-     * Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable java.util.Date expires) {
+-        return banPlayerIP(reason, expires, null);
+-    }
+-
+-    /**
+-     * Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @param source Source of the ban or null for default
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable java.util.Date expires, @Nullable String source) {
+-        return banPlayerIP(reason, expires, source, true);
+-    }
+-
+-    /**
+-     * Bans the IP address currently used by the player.
+-     * Does not ban the Profile, use {@link #banPlayerFull(String, java.util.Date, String)}
+-     * @param reason Reason for Ban
+-     * @param expires When to expire the ban
+-     * @param source Source of the ban or null for default
+-     * @param kickPlayer if the targeted player should be kicked
+-     * @return Ban Entry
+-     * @deprecated use {@link #ban(String, Date, String)} and {@link #banIp(String, Date, String, boolean)}
+-     */
+-    @Nullable
+-    @Deprecated
+-    public default org.bukkit.BanEntry banPlayerIP(@Nullable String reason, @Nullable java.util.Date expires, @Nullable String source, boolean kickPlayer) {
+-        org.bukkit.BanEntry banEntry = org.bukkit.Bukkit.getServer().getBanList(org.bukkit.BanList.Type.IP).addBan(getAddress().getAddress().getHostAddress(), reason, expires, source);
+-        if (kickPlayer && isOnline()) {
+-            getPlayer().kickPlayer(reason);
+-        }
+-
+-        return banEntry;
+-    }
+-
+-    /**
+-     * Sends an Action Bar message to the client.
+-     *
+-     * Use Section symbols for legacy color codes to send formatting.
+-     *
+-     * @param message The message to send
+-     * @deprecated use {@link #sendActionBar(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated
+-    public void sendActionBar(@NotNull String message);
+-
+-    /**
+-     * Sends an Action Bar message to the client.
+-     *
+-     * Use supplied alternative character to the section symbol to represent legacy color codes.
+-     *
+-     * @param alternateChar Alternate symbol such as '&amp;'
+-     * @param message The message to send
+-     * @deprecated use {@link #sendActionBar(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated
+-    public void sendActionBar(char alternateChar, @NotNull String message);
+-
+-    /**
+-     * Sends an Action Bar message to the client.
+-     *
+-     * @param message The components to send
+-     * @deprecated use {@link #sendActionBar(net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated
+-    public void sendActionBar(@NotNull net.md_5.bungee.api.chat.BaseComponent... message);
+-
+-    /**
+-     * Sends the component to the player
+-     *
+-     * @param component the components to send
+-     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-     */
+-    @Override
+-    @Deprecated
+-    public default void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
+-        spigot().sendMessage(component);
+-    }
+-
+-    /**
+-     * Sends an array of components as a single message to the player
+-     *
+-     * @param components the components to send
+-     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-     */
+-    @Override
+-    @Deprecated
+-    public default void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
+-        spigot().sendMessage(components);
+-    }
+-
+-    /**
+-     * Sends an array of components as a single message to the specified screen position of this player
+-     *
+-     * @deprecated This is unlikely the API you want to use. See {@link #sendActionBar(String)} for a more proper Action Bar API. This deprecated API may send unsafe items to the client.
+-     * @param position the screen position
+-     * @param components the components to send
+-     */
+-    @Deprecated
+-    public default void sendMessage(net.md_5.bungee.api.ChatMessageType position, net.md_5.bungee.api.chat.BaseComponent... components) {
+-        spigot().sendMessage(position, components);
+-    }
+-
+-    /**
+-     * Set the text displayed in the player list header and footer for this player
+-     *
+-     * @param header content for the top of the player list
+-     * @param footer content for the bottom of the player list
+-     * @deprecated in favour of {@link #sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated
+-    public void setPlayerListHeaderFooter(@Nullable net.md_5.bungee.api.chat.BaseComponent[] header, @Nullable net.md_5.bungee.api.chat.BaseComponent[] footer);
+-
+-    /**
+-     * Set the text displayed in the player list header and footer for this player
+-     *
+-     * @param header content for the top of the player list
+-     * @param footer content for the bottom of the player list
+-     * @deprecated in favour of {@link #sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
+-     */
+-    @Deprecated
+-    public void setPlayerListHeaderFooter(@Nullable net.md_5.bungee.api.chat.BaseComponent header, @Nullable net.md_5.bungee.api.chat.BaseComponent footer);
+-
+-    /**
+-     * Update the times for titles displayed to the player
+-     *
+-     * @param fadeInTicks  ticks to fade-in
+-     * @param stayTicks    ticks to stay visible
+-     * @param fadeOutTicks ticks to fade-out
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void setTitleTimes(int fadeInTicks, int stayTicks, int fadeOutTicks);
+-
+-    /**
+-     * Update the subtitle of titles displayed to the player
+-     *
+-     * @param subtitle Subtitle to set
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void setSubtitle(net.md_5.bungee.api.chat.BaseComponent[] subtitle);
+-
+-    /**
+-     * Update the subtitle of titles displayed to the player
+-     *
+-     * @param subtitle Subtitle to set
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void setSubtitle(net.md_5.bungee.api.chat.BaseComponent subtitle);
+-
+-    /**
+-     * Show the given title to the player, along with the last subtitle set, using the last set times
+-     *
+-     * @param title Title to set
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void showTitle(@Nullable net.md_5.bungee.api.chat.BaseComponent[] title);
+-
+-    /**
+-     * Show the given title to the player, along with the last subtitle set, using the last set times
+-     *
+-     * @param title Title to set
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void showTitle(@Nullable net.md_5.bungee.api.chat.BaseComponent title);
+-
+-    /**
+-     * Show the given title and subtitle to the player using the given times
+-     *
+-     * @param title        big text
+-     * @param subtitle     little text under it
+-     * @param fadeInTicks  ticks to fade-in
+-     * @param stayTicks    ticks to stay visible
+-     * @param fadeOutTicks ticks to fade-out
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void showTitle(@Nullable net.md_5.bungee.api.chat.BaseComponent[] title, @Nullable net.md_5.bungee.api.chat.BaseComponent[] subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
+-
+-    /**
+-     * Show the given title and subtitle to the player using the given times
+-     *
+-     * @param title        big text
+-     * @param subtitle     little text under it
+-     * @param fadeInTicks  ticks to fade-in
+-     * @param stayTicks    ticks to stay visible
+-     * @param fadeOutTicks ticks to fade-out
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void showTitle(@Nullable net.md_5.bungee.api.chat.BaseComponent title, @Nullable net.md_5.bungee.api.chat.BaseComponent subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
+-
+-    /**
+-     * Show the title to the player, overriding any previously displayed title.
+-     *
+-     * <p>This method overrides any previous title, use {@link #updateTitle(com.destroystokyo.paper.Title)} to change the existing one.</p>
+-     *
+-     * @param title the title to send
+-     * @throws NullPointerException if the title is null
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    void sendTitle(@NotNull com.destroystokyo.paper.Title title);
+-
+-    /**
+-     * Show the title to the player, overriding any previously displayed title.
+-     *
+-     * <p>This method doesn't override previous titles, but changes their values.</p>
+-     *
+-     * @param title the title to send
+-     * @throws NullPointerException if title is null
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    void updateTitle(@NotNull com.destroystokyo.paper.Title title);
+-
+-    /**
+-     * Hide any title that is currently visible to the player
+-     *
+-     * @deprecated use {@link #clearTitle()}
+-     */
+-    @Deprecated
+-    public void hideTitle();
++    void setHasSeenWinScreen(boolean hasSeenWinScreen);
+     // Paper end
+ 
+     /**
+@@ -1630,7 +851,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * is in front of the player, 90 is to the right, 180 is behind, and 270 is
+      * to the left
+      */
+-    public void sendHurtAnimation(float yaw);
++    void sendHurtAnimation(float yaw);
+ 
+     /**
+      * Add custom chat completion suggestions shown to the player while typing a
+@@ -1638,7 +859,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param completions the completions to send
+      */
+-    public void addCustomChatCompletions(@NotNull Collection<String> completions);
++    void addCustomChatCompletions(@NotNull Collection<String> completions);
+ 
+     /**
+      * Remove custom chat completion suggestions shown to the player while
+@@ -1650,7 +871,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param completions the completions to remove
+      */
+-    public void removeCustomChatCompletions(@NotNull Collection<String> completions);
++    void removeCustomChatCompletions(@NotNull Collection<String> completions);
+ 
+     /**
+      * Set the list of chat completion suggestions shown to the player while
+@@ -1661,13 +882,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param completions the completions to set
+      */
+-    public void setCustomChatCompletions(@NotNull Collection<String> completions);
++    void setCustomChatCompletions(@NotNull Collection<String> completions);
+ 
+     /**
+      * Forces an update of the player's entire inventory.
+      */
+     // @ApiStatus.Internal // Paper - is valid API
+-    public void updateInventory();
++    void updateInventory();
+ 
+     /**
+      * Gets this player's previous {@link GameMode}
+@@ -1675,7 +896,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return Previous game mode or null
+      */
+     @Nullable
+-    public GameMode getPreviousGameMode();
++    GameMode getPreviousGameMode();
+ 
+     /**
+      * Sets the current time on the player's client. When relative is true the
+@@ -1692,14 +913,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param relative When true the player time is kept relative to its world
+      *     time.
+      */
+-    public void setPlayerTime(long time, boolean relative);
++    void setPlayerTime(long time, boolean relative);
+ 
+     /**
+      * Returns the player's current timestamp.
+      *
+      * @return The player's time
+      */
+-    public long getPlayerTime();
++    long getPlayerTime();
+ 
+     /**
+      * Returns the player's current time offset relative to server time, or
+@@ -1707,7 +928,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return The player's time
+      */
+-    public long getPlayerTimeOffset();
++    long getPlayerTimeOffset();
+ 
+     /**
+      * Returns true if the player's time is relative to the server time,
+@@ -1716,7 +937,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return true if the player's time is relative to the server time.
+      */
+-    public boolean isPlayerTimeRelative();
++    boolean isPlayerTimeRelative();
+ 
+     /**
+      * Restores the normal condition where the player's time is synchronized
+@@ -1724,7 +945,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * <p>
+      * Equivalent to calling setPlayerTime(0, true).
+      */
+-    public void resetPlayerTime();
++    void resetPlayerTime();
+ 
+     /**
+      * Sets the type of weather the player will see.  When used, the weather
+@@ -1733,7 +954,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param type The WeatherType enum type the player should experience
+      */
+-    public void setPlayerWeather(@NotNull WeatherType type);
++    void setPlayerWeather(@NotNull WeatherType type);
+ 
+     /**
+      * Returns the type of weather the player is currently experiencing.
+@@ -1742,13 +963,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     null if player is seeing server weather.
+      */
+     @Nullable
+-    public WeatherType getPlayerWeather();
++    WeatherType getPlayerWeather();
+ 
+     /**
+      * Restores the normal condition where the player's weather is controlled
+      * by server conditions.
+      */
+-    public void resetPlayerWeather();
++    void resetPlayerWeather();
+ 
+     // Paper start
+     /**
+@@ -1756,7 +977,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param amount Exp amount to give
+      */
+-    public default void giveExp(int amount) {
++    default void giveExp(int amount) {
+         giveExp(amount, false);
+     }
+     /**
+@@ -1764,7 +985,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return The cooldown in ticks
+      */
+-    public int getExpCooldown();
++    int getExpCooldown();
+ 
+     /**
+      * Sets the player's cooldown between picking up experience orbs..
+@@ -1778,7 +999,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param ticks The cooldown in ticks
+      */
+-    public void setExpCooldown(int ticks);
++    void setExpCooldown(int ticks);
+ 
+     /**
+      * Gives the player the amount of experience specified.
+@@ -1786,7 +1007,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param amount Exp amount to give
+      * @param applyMending Mend players items with mending, with same behavior as picking up orbs. calls {@link #applyMending(int)}
+      */
+-    public void giveExp(int amount, boolean applyMending);
++    void giveExp(int amount, boolean applyMending);
+ 
+     /**
+      * Applies the mending effect to any items just as picking up an orb would.
+@@ -1796,7 +1017,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param amount Exp to apply
+      * @return the remaining experience
+      */
+-    public int applyMending(int amount);
++    int applyMending(int amount);
+     // Paper end
+ 
+     /**
+@@ -1805,7 +1026,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param amount amount of experience levels to give or take
+      */
+-    public void giveExpLevels(int amount);
++    void giveExpLevels(int amount);
+ 
+     /**
+      * Gets the players current experience points towards the next level.
+@@ -1814,7 +1035,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return Current experience points
+      */
+-    public float getExp();
++    float getExp();
+ 
+     /**
+      * Sets the players current experience points towards the next level
+@@ -1823,21 +1044,21 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param exp New experience points
+      */
+-    public void setExp(float exp);
++    void setExp(float exp);
+ 
+     /**
+      * Gets the players current experience level
+      *
+      * @return Current experience level
+      */
+-    public int getLevel();
++    int getLevel();
+ 
+     /**
+      * Sets the players current experience level
+      *
+      * @param level New experience level
+      */
+-    public void setLevel(int level);
++    void setLevel(int level);
+ 
+     /**
+      * Gets the players total experience points.
+@@ -1847,7 +1068,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return Current total experience points
+      */
+-    public int getTotalExperience();
++    int getTotalExperience();
+ 
+     /**
+      * Sets the players current experience points.
+@@ -1857,7 +1078,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param exp New total experience points
+      */
+-    public void setTotalExperience(int exp);
++    void setTotalExperience(int exp);
+     // Paper start
+     /**
+      * Gets the players total amount of experience points he collected to reach the current level and level progress.
+@@ -1907,7 +1128,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param progress Experience progress percentage (between 0.0 and 1.0)
+      * @see #setExp(float)
+      */
+-    public void sendExperienceChange(float progress);
++    void sendExperienceChange(float progress);
+ 
+     /**
+      * Send an experience change.
+@@ -1921,7 +1142,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @see #setExp(float)
+      * @see #setLevel(int)
+      */
+-    public void sendExperienceChange(float progress, int level);
++    void sendExperienceChange(float progress, int level);
+ 
+     /**
+      * Determines if the Player is allowed to fly via jump key double-tap like
+@@ -1929,7 +1150,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return True if the player is allowed to fly.
+      */
+-    public boolean getAllowFlight();
++    boolean getAllowFlight();
+ 
+     /**
+      * Sets if the Player is allowed to fly via jump key double-tap like in
+@@ -1937,7 +1158,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param flight If flight should be allowed.
+      */
+-    public void setAllowFlight(boolean flight);
++    void setAllowFlight(boolean flight);
+ 
+     // Paper start - flying fall damage
+     /**
+@@ -1945,7 +1166,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param flyingFallDamage Enables fall damage when {@link #getAllowFlight()} is {@code true}
+      */
+-    public void setFlyingFallDamage(@NotNull net.kyori.adventure.util.TriState flyingFallDamage);
++    void setFlyingFallDamage(@NotNull net.kyori.adventure.util.TriState flyingFallDamage);
+ 
+     /**
+      * Allows you to get if fall damage is enabled while {@link #getAllowFlight()} is {@code true}
+@@ -1953,34 +1174,16 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return A tristate of whether fall damage is enabled, not set, or disabled when {@link #getAllowFlight()} is {@code true}
+      */
+     @NotNull
+-    public net.kyori.adventure.util.TriState hasFlyingFallDamage();
++    net.kyori.adventure.util.TriState hasFlyingFallDamage();
+     // Paper end
+ 
+-    /**
+-     * Hides a player from this player
+-     *
+-     * @param player Player to hide
+-     * @deprecated see {@link #hidePlayer(Plugin, Player)}
+-     */
+-    @Deprecated
+-    public void hidePlayer(@NotNull Player player);
+-
+     /**
+      * Hides a player from this player
+      *
+      * @param plugin Plugin that wants to hide the player
+      * @param player Player to hide
+      */
+-    public void hidePlayer(@NotNull Plugin plugin, @NotNull Player player);
+-
+-    /**
+-     * Allows this player to see a player that was previously hidden
+-     *
+-     * @param player Player to show
+-     * @deprecated see {@link #showPlayer(Plugin, Player)}
+-     */
+-    @Deprecated
+-    public void showPlayer(@NotNull Player player);
++    void hidePlayer(@NotNull Plugin plugin, @NotNull Player player);
+ 
+     /**
+      * Allows this player to see a player that was previously hidden. If
+@@ -1990,7 +1193,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param plugin Plugin that wants to show the player
+      * @param player Player to show
+      */
+-    public void showPlayer(@NotNull Plugin plugin, @NotNull Player player);
++    void showPlayer(@NotNull Plugin plugin, @NotNull Player player);
+ 
+     /**
+      * Checks to see if a player has been hidden from this player
+@@ -1999,7 +1202,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return True if the provided player is not being hidden from this
+      *     player
+      */
+-    public boolean canSee(@NotNull Player player);
++    boolean canSee(@NotNull Player player);
+ 
+     /**
+      * Visually hides an entity from this player.
+@@ -2007,7 +1210,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param plugin Plugin that wants to hide the entity
+      * @param entity Entity to hide
+      */
+-    public void hideEntity(@NotNull Plugin plugin, @NotNull Entity entity);
++    void hideEntity(@NotNull Plugin plugin, @NotNull Entity entity);
+ 
+     /**
+      * Allows this player to see an entity that was previously hidden. If
+@@ -2017,7 +1220,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param plugin Plugin that wants to show the entity
+      * @param entity Entity to show
+      */
+-    public void showEntity(@NotNull Plugin plugin, @NotNull Entity entity);
++    void showEntity(@NotNull Plugin plugin, @NotNull Entity entity);
+ 
+     /**
+      * Checks to see if an entity has been visually hidden from this player.
+@@ -2026,7 +1229,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return True if the provided entity is not being hidden from this
+      *     player
+      */
+-    public boolean canSee(@NotNull Entity entity);
++    boolean canSee(@NotNull Entity entity);
+ 
+     // Paper start
+     /**
+@@ -2059,296 +1262,50 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return True if the player is flying, else false.
+      */
+-    public boolean isFlying();
++    boolean isFlying();
+ 
+     /**
+      * Makes this player start or stop flying.
+      *
+      * @param value True to fly.
+      */
+-    public void setFlying(boolean value);
+-
+-    /**
+-     * Sets the speed at which a client will fly. Negative values indicate
+-     * reverse directions.
+-     *
+-     * @param value The new speed, from -1 to 1.
+-     * @throws IllegalArgumentException If new speed is less than -1 or
+-     *     greater than 1
+-     */
+-    public void setFlySpeed(float value) throws IllegalArgumentException;
+-
+-    /**
+-     * Sets the speed at which a client will walk. Negative values indicate
+-     * reverse directions.
+-     *
+-     * @param value The new speed, from -1 to 1.
+-     * @throws IllegalArgumentException If new speed is less than -1 or
+-     *     greater than 1
+-     */
+-    public void setWalkSpeed(float value) throws IllegalArgumentException;
++    void setFlying(boolean value);
+ 
+     /**
+-     * Gets the current allowed speed that a client can fly.
+-     *
+-     * @return The current allowed speed, from -1 to 1
+-     */
+-    public float getFlySpeed();
+-
+-    /**
+-     * Gets the current allowed speed that a client can walk.
+-     *
+-     * @return The current allowed speed, from -1 to 1
+-     */
+-    public float getWalkSpeed();
+-
+-    /**
+-     * Request that the player's client download and switch texture packs.
+-     * <p>
+-     * The player's client will download the new texture pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached the same
+-     * texture pack in the past, it will perform a file size check against
+-     * the response content to determine if the texture pack has changed and
+-     * needs to be downloaded again. When this request is sent for the very
+-     * first time from a given server, the client will first display a
+-     * confirmation GUI to the player before proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server textures on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>The request is send with "null" as the hash. This might result
+-     *     in newer versions not loading the pack correctly.
+-     * </ul>
+-     *
+-     * @param url The URL from which the client will download the texture
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long.
+-     * @deprecated Minecraft no longer uses textures packs. Instead you
+-     *     should use {@link #setResourcePack(UUID, String, byte[], net.kyori.adventure.text.Component, boolean)}.
+-     */
+-    @Deprecated
+-    public void setTexturePack(@NotNull String url);
+-
+-    /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached the same
+-     * resource pack in the past, it will perform a file size check against
+-     * the response content to determine if the resource pack has changed and
+-     * needs to be downloaded again. When this request is sent for the very
+-     * first time from a given server, the client will first display a
+-     * confirmation GUI to the player before proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>The request is send with empty string as the hash. This might result
+-     *     in newer versions not loading the pack correctly.
+-     * </ul>
+-     *
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
+-     */
+-    @Deprecated // Paper - adventure
+-    public void setResourcePack(@NotNull String url);
+-
+-    /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached a
+-     * resource pack with the same hash in the past it will not download but
+-     * directly apply the cached pack. If the hash is null and the client has
+-     * downloaded and cached the same resource pack in the past, it will
+-     * perform a file size check against the response content to determine if
+-     * the resource pack has changed and needs to be downloaded again. When
+-     * this request is sent for the very first time from a given server, the
+-     * client will first display a confirmation GUI to the player before
+-     * proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>The request is sent with empty string as the hash when the hash is
+-     *     not provided. This might result in newer versions not loading the
+-     *     pack correctly.
+-     * </ul>
+-     *
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @param hash The sha1 hash sum of the resource pack file which is used
+-     *     to apply a cached version of the pack directly without downloading
+-     *     if it is available. Hast to be 20 bytes long!
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+-     *     long.
+-     */
+-    @Deprecated // Paper - adventure
+-    public void setResourcePack(@NotNull String url, @Nullable byte[] hash);
+-
+-    /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached a
+-     * resource pack with the same hash in the past it will not download but
+-     * directly apply the cached pack. If the hash is null and the client has
+-     * downloaded and cached the same resource pack in the past, it will
+-     * perform a file size check against the response content to determine if
+-     * the resource pack has changed and needs to be downloaded again. When
+-     * this request is sent for the very first time from a given server, the
+-     * client will first display a confirmation GUI to the player before
+-     * proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>To remove a resource pack you can use
+-     *     {@link #removeResourcePacks(UUID, UUID...)} or {@link #clearResourcePacks()}.
+-     * <li>The request is sent with empty string as the hash when the hash is
+-     *     not provided. This might result in newer versions not loading the
+-     *     pack correctly.
+-     * </ul>
++     * Sets the speed at which a client will fly. Negative values indicate
++     * reverse directions.
+      *
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @param hash The sha1 hash sum of the resource pack file which is used
+-     *     to apply a cached version of the pack directly without downloading
+-     *     if it is available. Hast to be 20 bytes long!
+-     * @param prompt The optional custom prompt message to be shown to client.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+-     *     long.
++     * @param value The new speed, from -1 to 1.
++     * @throws IllegalArgumentException If new speed is less than -1 or
++     *     greater than 1
+      */
+-    @Deprecated // Paper - adventure
+-    public void setResourcePack(@NotNull String url, @Nullable byte[] hash, @Nullable String prompt);
++    void setFlySpeed(float value) throws IllegalArgumentException;
+ 
+-    // Paper start
+     /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached a
+-     * resource pack with the same hash in the past it will not download but
+-     * directly apply the cached pack. If the hash is null and the client has
+-     * downloaded and cached the same resource pack in the past, it will
+-     * perform a file size check against the response content to determine if
+-     * the resource pack has changed and needs to be downloaded again. When
+-     * this request is sent for the very first time from a given server, the
+-     * client will first display a confirmation GUI to the player before
+-     * proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>To remove a resource pack you can use
+-     *     {@link #removeResourcePacks(UUID, UUID...)} or {@link #clearResourcePacks()}.
+-     * <li>The request is sent with empty string as the hash when the hash is
+-     *     not provided. This might result in newer versions not loading the
+-     *     pack correctly.
+-     * </ul>
++     * Sets the speed at which a client will walk. Negative values indicate
++     * reverse directions.
+      *
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @param hash The sha1 hash sum of the resource pack file which is used
+-     *     to apply a cached version of the pack directly without downloading
+-     *     if it is available. Hast to be 20 bytes long!
+-     * @param prompt The optional custom prompt message to be shown to client.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+-     *     long.
+-     * @see #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)
++     * @param value The new speed, from -1 to 1.
++     * @throws IllegalArgumentException If new speed is less than -1 or
++     *     greater than 1
+      */
+-    default void setResourcePack(final @NotNull String url, final byte @Nullable [] hash, final net.kyori.adventure.text.@Nullable Component prompt) {
+-        this.setResourcePack(url, hash, prompt, false);
+-    }
+-    // Paper end
++    void setWalkSpeed(float value) throws IllegalArgumentException;
+ 
+     /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached a
+-     * resource pack with the same hash in the past it will not download but
+-     * directly apply the cached pack. If the hash is null and the client has
+-     * downloaded and cached the same resource pack in the past, it will
+-     * perform a file size check against the response content to determine if
+-     * the resource pack has changed and needs to be downloaded again. When
+-     * this request is sent for the very first time from a given server, the
+-     * client will first display a confirmation GUI to the player before
+-     * proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>To remove a resource pack you can use
+-     *     {@link #removeResourcePacks(UUID, UUID...)} or {@link #clearResourcePacks()}.
+-     * <li>The request is sent with empty string as the hash when the hash is
+-     *     not provided. This might result in newer versions not loading the
+-     *     pack correctly.
+-     * </ul>
++     * Gets the current allowed speed that a client can fly.
+      *
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @param hash The sha1 hash sum of the resource pack file which is used
+-     *     to apply a cached version of the pack directly without downloading
+-     *     if it is available. Hast to be 20 bytes long!
+-     * @param force If true, the client will be disconnected from the server
+-     *     when it declines to use the resource pack.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+-     *     long.
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
++     * @return The current allowed speed, from -1 to 1
++     */
++    float getFlySpeed();
++
++    /**
++     * Gets the current allowed speed that a client can walk.
++     *
++     * @return The current allowed speed, from -1 to 1
+      */
+-    @Deprecated // Paper - adventure
+-    public void setResourcePack(@NotNull String url, @Nullable byte[] hash, boolean force);
++    float getWalkSpeed();
+ 
++    // Paper start
+     /**
+      * Request that the player's client download and switch resource packs.
+      * <p>
+@@ -2384,17 +1341,17 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *     to apply a cached version of the pack directly without downloading
+      *     if it is available. Hast to be 20 bytes long!
+      * @param prompt The optional custom prompt message to be shown to client.
+-     * @param force If true, the client will be disconnected from the server
+-     *     when it declines to use the resource pack.
+      * @throws IllegalArgumentException Thrown if the URL is null.
+      * @throws IllegalArgumentException Thrown if the URL is too long. The
+      *     length restriction is an implementation specific arbitrary value.
+      * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+      *     long.
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
++     * @see #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)
+      */
+-    @Deprecated // Paper
+-    public void setResourcePack(@NotNull String url, @Nullable byte[] hash, @Nullable String prompt, boolean force);
++    default void setResourcePack(final @NotNull String url, final byte @Nullable [] hash, final net.kyori.adventure.text.@Nullable Component prompt) {
++        this.setResourcePack(url, hash, prompt, false);
++    }
++    // Paper end
+ 
+     // Paper start
+     /**
+@@ -2446,54 +1403,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     }
+     // Paper end
+ 
+-    /**
+-     * Request that the player's client download and switch resource packs.
+-     * <p>
+-     * The player's client will download the new resource pack asynchronously
+-     * in the background, and will automatically switch to it once the
+-     * download is complete. If the client has downloaded and cached a
+-     * resource pack with the same hash in the past it will not download but
+-     * directly apply the cached pack. If the hash is null and the client has
+-     * downloaded and cached the same resource pack in the past, it will
+-     * perform a file size check against the response content to determine if
+-     * the resource pack has changed and needs to be downloaded again. When
+-     * this request is sent for the very first time from a given server, the
+-     * client will first display a confirmation GUI to the player before
+-     * proceeding with the download.
+-     * <p>
+-     * Notes:
+-     * <ul>
+-     * <li>Players can disable server resources on their client, in which
+-     *     case this method will have no affect on them. Use the
+-     *     {@link PlayerResourcePackStatusEvent} to figure out whether or not
+-     *     the player loaded the pack!
+-     * <li>To remove a resource pack you can use
+-     *     {@link #removeResourcePacks(UUID, UUID...)} or {@link #clearResourcePacks()}.
+-     * <li>The request is sent with empty string as the hash when the hash is
+-     *     not provided. This might result in newer versions not loading the
+-     *     pack correctly.
+-     * </ul>
+-     *
+-     * @param id Unique resource pack ID.
+-     * @param url The URL from which the client will download the resource
+-     *     pack. The string must contain only US-ASCII characters and should
+-     *     be encoded as per RFC 1738.
+-     * @param hash The sha1 hash sum of the resource pack file which is used
+-     *     to apply a cached version of the pack directly without downloading
+-     *     if it is available. Hast to be 20 bytes long!
+-     * @param prompt The optional custom prompt message to be shown to client.
+-     * @param force If true, the client will be disconnected from the server
+-     *     when it declines to use the resource pack.
+-     * @throws IllegalArgumentException Thrown if the URL is null.
+-     * @throws IllegalArgumentException Thrown if the URL is too long. The
+-     *     length restriction is an implementation specific arbitrary value.
+-     * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+-     *     long.
+-     * @deprecated in favour of {@link #sendResourcePacks(net.kyori.adventure.resource.ResourcePackRequest)}
+-     */
+-    @Deprecated // Paper - adventure
+-    public void setResourcePack(@NotNull UUID id, @NotNull String url, @Nullable byte[] hash, @Nullable String prompt, boolean force);
+-
+     // Paper start
+     /**
+      * Request that the player's client download and switch resource packs.
+@@ -2694,18 +1603,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     org.bukkit.event.player.PlayerResourcePackStatusEvent.@Nullable Status getResourcePackStatus();
+ 
+-    /**
+-     * Gets the most recent pack hash from the player.
+-     *
+-     * @return the most recent hash or null
+-     * @deprecated This is no longer sent from the client and will always be null
+-     */
+-    @Deprecated(forRemoval = true)
+-    @org.jetbrains.annotations.Contract("-> null")
+-    default @Nullable String getResourcePackHash() {
+-        return null;
+-    }
+-
+     /**
+      * Gets if the last resource pack status from the player
+      * was {@link org.bukkit.event.player.PlayerResourcePackStatusEvent.Status#SUCCESSFULLY_LOADED}.
+@@ -2761,7 +1658,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalArgumentException Thrown if the hash is not 20 bytes
+      *     long.
+      */
+-    public void addResourcePack(@NotNull UUID id, @NotNull String url, @Nullable byte[] hash, @Nullable String prompt, boolean force);
++    void addResourcePack(@NotNull UUID id, @NotNull String url, @Nullable byte[] hash, @Nullable String prompt, boolean force);
+ 
+     /**
+      * Request that the player's client remove a resource pack sent by the
+@@ -2771,14 +1668,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalArgumentException If the ID is null.
+      * @see #removeResourcePacks(UUID, UUID...)
+      */
+-    public void removeResourcePack(@NotNull UUID id);
++    void removeResourcePack(@NotNull UUID id);
+ 
+     /**
+      * Request that the player's client remove all loaded resource pack sent by
+      * the server.
+      * @see #clearResourcePacks()
+      */
+-    public void removeResourcePacks();
++    void removeResourcePacks();
+ 
+     /**
+      * Gets the Scoreboard displayed to this player
+@@ -2786,7 +1683,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return The current scoreboard seen by this player
+      */
+     @NotNull
+-    public Scoreboard getScoreboard();
++    Scoreboard getScoreboard();
+ 
+     /**
+      * Sets the player's visible Scoreboard.
+@@ -2798,7 +1695,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalStateException if this is a player that is not logged
+      *     yet or has logged out
+      */
+-    public void setScoreboard(@NotNull Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException;
++    void setScoreboard(@NotNull Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException;
+ 
+     /**
+      * Gets the {@link WorldBorder} visible to this Player, or null if viewing
+@@ -2807,7 +1704,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return the player's world border
+      */
+     @Nullable
+-    public WorldBorder getWorldBorder();
++    WorldBorder getWorldBorder();
+ 
+     /**
+      * Sets the {@link WorldBorder} visible to this Player.
+@@ -2820,7 +1717,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @see Server#createWorldBorder()
+      */
+-    public void setWorldBorder(@Nullable WorldBorder border);
++    void setWorldBorder(@Nullable WorldBorder border);
+ 
+     /**
+      * Send a health update to the player. This will adjust the health, food, and
+@@ -2832,14 +1729,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param foodLevel the food level
+      * @param saturation the saturation
+      */
+-    public void sendHealthUpdate(double health, int foodLevel, float saturation);
++    void sendHealthUpdate(double health, int foodLevel, float saturation);
+ 
+     /**
+      * Send a health update to the player using its known server values. This will
+      * synchronize the health, food, and saturation on the client and therefore may
+      * be useful when changing a player's maximum health attribute.
+      */
+-    public void sendHealthUpdate();
++    void sendHealthUpdate();
+ 
+     /**
+      * Gets if the client is displayed a 'scaled' health, that is, health on a
+@@ -2848,7 +1745,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return if client health display is scaled
+      * @see Player#setHealthScaled(boolean)
+      */
+-    public boolean isHealthScaled();
++    boolean isHealthScaled();
+ 
+     /**
+      * Sets if the client is displayed a 'scaled' health, that is, health on a
+@@ -2859,7 +1756,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @param scale if the client health display is scaled
+      */
+-    public void setHealthScaled(boolean scale);
++    void setHealthScaled(boolean scale);
+ 
+     /**
+      * Sets the number to scale health to for the client; this will also
+@@ -2873,7 +1770,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalArgumentException if scale is {@link Double#NaN}
+      * @throws IllegalArgumentException if scale is too high
+      */
+-    public void setHealthScale(double scale) throws IllegalArgumentException;
++    void setHealthScale(double scale) throws IllegalArgumentException;
+ 
+     /**
+      * Gets the number that health is scaled to for the client.
+@@ -2883,7 +1780,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @see Player#setHealthScale(double)
+      * @see Player#setHealthScaled(boolean)
+      */
+-    public double getHealthScale();
++    double getHealthScale();
+ 
+     /**
+      * Gets the entity which is followed by the camera when in
+@@ -2893,7 +1790,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * following a specific entity.
+      */
+     @Nullable
+-    public Entity getSpectatorTarget();
++    Entity getSpectatorTarget();
+ 
+     /**
+      * Sets the entity which is followed by the camera when in
+@@ -2903,46 +1800,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalStateException if the player is not in
+      * {@link GameMode#SPECTATOR}
+      */
+-    public void setSpectatorTarget(@Nullable Entity entity);
+-
+-    /**
+-     * Sends a title and a subtitle message to the player. If either of these
+-     * values are null, they will not be sent and the display will remain
+-     * unchanged. If they are empty strings, the display will be updated as
+-     * such. If the strings contain a new line, only the first line will be
+-     * sent. The titles will be displayed with the client's default timings.
+-     *
+-     * @param title Title text
+-     * @param subtitle Subtitle text
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated
+-    public void sendTitle(@Nullable String title, @Nullable String subtitle);
+-
+-    /**
+-     * Sends a title and a subtitle message to the player. If either of these
+-     * values are null, they will not be sent and the display will remain
+-     * unchanged. If they are empty strings, the display will be updated as
+-     * such. If the strings contain a new line, only the first line will be
+-     * sent. All timings values may take a value of -1 to indicate that they
+-     * will use the last value sent (or the defaults if no title has been
+-     * displayed).
+-     *
+-     * @param title Title text
+-     * @param subtitle Subtitle text
+-     * @param fadeIn time in ticks for titles to fade in. Defaults to 10.
+-     * @param stay time in ticks for titles to stay. Defaults to 70.
+-     * @param fadeOut time in ticks for titles to fade out. Defaults to 20.
+-     * @deprecated Use {@link #showTitle(net.kyori.adventure.title.Title)} or {@link #sendTitlePart(net.kyori.adventure.title.TitlePart, Object)}
+-     */
+-    @Deprecated // Paper - Adventure
+-    public void sendTitle(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut);
++    void setSpectatorTarget(@Nullable Entity entity);
+ 
+     /**
+      * Resets the title displayed to the player. This will clear the displayed
+      * title / subtitle and reset timings to their default values.
+      */
+-    public void resetTitle();
++    void resetTitle();
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -2952,7 +1816,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param location the location to spawn at
+      * @param count the number of particles
+      */
+-    public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count);
++    void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -2964,7 +1828,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param z the position on the z axis to spawn at
+      * @param count the number of particles
+      */
+-    public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count);
++    void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -2977,7 +1841,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, @Nullable T data);
+ 
+ 
+     /**
+@@ -2993,7 +1857,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, @Nullable T data);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3008,7 +1872,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param offsetY the maximum random offset on the Y axis
+      * @param offsetZ the maximum random offset on the Z axis
+      */
+-    public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ);
++    void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3025,7 +1889,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param offsetY the maximum random offset on the Y axis
+      * @param offsetZ the maximum random offset on the Z axis
+      */
+-    public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ);
++    void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3043,7 +1907,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, @Nullable T data);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3063,7 +1927,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, @Nullable T data);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3080,7 +1944,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param extra the extra data for this particle, depends on the
+      *              particle used (normally speed)
+      */
+-    public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, double extra);
++    void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, double extra);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3099,7 +1963,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param extra the extra data for this particle, depends on the
+      *              particle used (normally speed)
+      */
+-    public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra);
++    void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3119,7 +1983,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable T data);
+ 
+     /**
+      * Spawns the particle (the number of times specified by count)
+@@ -3141,7 +2005,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param data the data to use for the particle or null,
+      *             the type of this depends on {@link Particle#getDataType()}
+      */
+-    public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable T data);
++    <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable T data);
+ 
+     /**
+      * Return the player's progression on the specified advancement.
+@@ -3150,7 +2014,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return object detailing the player's progress
+      */
+     @NotNull
+-    public AdvancementProgress getAdvancementProgress(@NotNull Advancement advancement);
++    AdvancementProgress getAdvancementProgress(@NotNull Advancement advancement);
+ 
+     /**
+      * Get the player's current client side view distance.
+@@ -3160,7 +2024,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return client view distance as above
+      */
+-    public int getClientViewDistance();
++    int getClientViewDistance();
+ 
+     // Paper start
+     /**
+@@ -3183,23 +2047,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return player ping
+      */
+-    public int getPing();
+-
+-    /**
+-     * Gets the player's current locale.
+-     *
+-     * The value of the locale String is not defined properly.
+-     * <br>
+-     * The vanilla Minecraft client will use lowercase language / country pairs
+-     * separated by an underscore, but custom resource packs may use any format
+-     * they wish.
+-     *
+-     * @return the player's locale
+-     * @deprecated in favour of {@link #locale()}
+-     */
+-    @NotNull
+-    @Deprecated // Paper
+-    public String getLocale();
++    int getPing();
+ 
+     // Paper start
+     /**
+@@ -3207,14 +2055,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      *
+      * @return if the player can affect mob spawning
+      */
+-    public boolean getAffectsSpawning();
++    boolean getAffectsSpawning();
+ 
+     /**
+      * Set whether the player can affect mob spawning
+      *
+      * @param affects Whether the player can affect mob spawning
+      */
+-    public void setAffectsSpawning(boolean affects);
++    void setAffectsSpawning(boolean affects);
+ 
+     /**
+      * Gets the view distance for this player
+@@ -3222,7 +2070,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return the player's view distance
+      * @see org.bukkit.World#getViewDistance()
+      */
+-    public int getViewDistance();
++    int getViewDistance();
+ 
+     /**
+      * Sets the view distance for this player
+@@ -3230,49 +2078,21 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param viewDistance the player's view distance
+      * @see org.bukkit.World#setViewDistance(int)
+      */
+-    public void setViewDistance(int viewDistance);
++    void setViewDistance(int viewDistance);
+ 
+     /**
+      * Gets the simulation distance for this player
+      *
+      * @return the player's simulation distance
+      */
+-    public int getSimulationDistance();
++    int getSimulationDistance();
+ 
+     /**
+      * Sets the simulation distance for this player
+      *
+      * @param simulationDistance the player's new simulation distance
+      */
+-    public void setSimulationDistance(int simulationDistance);
+-    
+-    /**
+-     * Gets the no-ticking view distance for this player.
+-     * <p>
+-     * No-tick view distance is the view distance where chunks will load, however the chunks and their entities will not
+-     * be set to tick.
+-     * </p>
+-     * @return The no-tick view distance for this player.
+-     * @deprecated Use {@link #getViewDistance()}
+-     */
+-    @Deprecated
+-    default int getNoTickViewDistance() {
+-        return this.getViewDistance();
+-    }
+-
+-    /**
+-     * Sets the no-ticking view distance for this player.
+-     * <p>
+-     * No-tick view distance is the view distance where chunks will load, however the chunks and their entities will not
+-     * be set to tick.
+-     * </p>
+-     * @param viewDistance view distance in [2, 32] or -1
+-     * @deprecated Use {@link #setViewDistance(int)}
+-     */
+-    @Deprecated
+-    default void setNoTickViewDistance(int viewDistance) {
+-        this.setViewDistance(viewDistance);
+-    }
++    void setSimulationDistance(int simulationDistance);
+ 
+     /**
+      * Gets the sending view distance for this player.
+@@ -3281,7 +2101,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * </p>
+      * @return The sending view distance for this player.
+      */
+-    public int getSendViewDistance();
++    int getSendViewDistance();
+ 
+     /**
+      * Sets the sending view distance for this player.
+@@ -3290,7 +2110,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * </p>
+      * @param viewDistance view distance in [2, 32] or -1
+      */
+-    public void setSendViewDistance(int viewDistance);
++    void setSendViewDistance(int viewDistance);
+     // Paper end
+ 
+     /**
+@@ -3299,25 +2119,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * Generally useful to ensure the client has a complete list of commands
+      * after permission changes are done.
+      */
+-    public void updateCommands();
++    void updateCommands();
+ 
+     /**
+      * Open a {@link Material#WRITTEN_BOOK} for a Player
+      *
+      * @param book The book to open for this player
+      */
+-    public void openBook(@NotNull ItemStack book);
+-
+-    /**
+-     * Open a Sign for editing by the Player.
+-     *
+-     * The Sign must be in the same world as the player.
+-     *
+-     * @param sign The sign to edit
+-     * @deprecated use {@link #openSign(Sign, Side)}
+-     */
+-    @Deprecated
+-    public void openSign(@NotNull Sign sign);
++    void openBook(@NotNull ItemStack book);
+ 
+     /**
+      * Open a Sign for editing by the Player.
+@@ -3327,7 +2136,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param sign The sign to edit
+      * @param side The side to edit
+      */
+-    public void openSign(@NotNull Sign sign, @NotNull Side side);
++    void openSign(@NotNull Sign sign, @NotNull Side side);
+ 
+     /**
+      * Shows the demo screen to the player, this screen is normally only seen in
+@@ -3335,14 +2144,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * <br>
+      * Servers can modify the text on this screen using a resource pack.
+      */
+-    public void showDemoScreen();
++    void showDemoScreen();
+ 
+     /**
+      * Gets whether the player has the "Allow Server Listings" setting enabled.
+      *
+      * @return whether the player allows server listings
+      */
+-    public boolean isAllowingServerListings();
++    boolean isAllowingServerListings();
+ 
+     // Paper start
+     @NotNull
+@@ -3399,25 +2208,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return the client option value of the player
+      */
+     <T> @NotNull T getClientOption(com.destroystokyo.paper.@NotNull ClientOption<T> option);
+-    // Paper end - client option API
+-
+-    // Paper start - elytra boost API
+-    /**
+-     * Boost a Player that's {@link #isGliding()} using a {@link Firework}.
+-     * If the creation of the entity is cancelled, no boosting is done.
+-     * This method does not fire {@link com.destroystokyo.paper.event.player.PlayerElytraBoostEvent}.
+-     *
+-     * @param firework The {@link Material#FIREWORK_ROCKET} to boost the player with
+-     * @return The {@link Firework} boosting the Player or null if the spawning of the entity was cancelled
+-     * @throws IllegalArgumentException if {@link #isGliding()} is false
+-     * or if the {@code firework} isn't a {@link Material#FIREWORK_ROCKET}
+-     * @deprecated use {@link HumanEntity#fireworkBoost(ItemStack)} instead. Note that this method <b>does not</b>
+-     * check if the player is gliding or not.
+-     */
+-    default @Nullable Firework boostElytra(final @NotNull ItemStack firework) {
+-        com.google.common.base.Preconditions.checkState(this.isGliding(), "Player must be gliding");
+-        return this.fireworkBoost(firework);
+-    }
+     // Paper end - elytra boost API
+ 
+     // Paper start - sendOpLevel API
+@@ -3431,35 +2221,10 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @throws IllegalArgumentException If the level is negative or greater than {@code 4} (i.e. not within {@code [0, 4]}).
+      */
+     void sendOpLevel(byte level);
+-    // Paper end - sendOpLevel API
+-
+-    // Paper start - custom chat completions API
+-    /**
+-     * Adds custom chat completion suggestions that the client will
+-     * suggest when typing in chat.
+-     *
+-     * @param completions custom completions
+-     * @deprecated use {@link #addCustomChatCompletions(Collection)}
+-     */
+-    @Deprecated(since = "1.20.1")
+-    void addAdditionalChatCompletions(@NotNull java.util.Collection<String> completions);
+-
+-    /**
+-     * Removes custom chat completion suggestions that the client
+-     * suggests when typing in chat.
+-     *
+-     * Note: this only applies to previously added custom completions,
+-     * online player names are always suggested and cannot be removed.
+-     *
+-     * @param completions custom completions
+-     * @deprecated use {@link #addCustomChatCompletions(Collection)}
+-     */
+-    @Deprecated(since = "1.20.1")
+-    void removeAdditionalChatCompletions(@NotNull java.util.Collection<String> completions);
+     // Paper end - custom chat completions API
+ 
+     // Spigot start
+-    public class Spigot extends Entity.Spigot {
++    class Spigot extends Entity.Spigot {
+ 
+         /**
+          * Gets the connection address of this player, regardless of whether it
+@@ -3480,7 +2245,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+         }
+ 
+         /**
+-         * Gets all players hidden with {@link #hidePlayer(org.bukkit.entity.Player)}.
++         * Gets all players hidden with {@link #hidePlayer(org.bukkit.plugin.Plugin, org.bukkit.entity.Player)}.
+          *
+          * @return a Set with all hidden players
+          */
+@@ -3488,79 +2253,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+         public java.util.Set<Player> getHiddenPlayers() {
+             throw new UnsupportedOperationException("Not supported yet.");
+         }
+-
+-        @Deprecated // Paper
+-        @Override
+-        public void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-        }
+-
+-        @Deprecated // Paper
+-        @Override
+-        public void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-        }
+-
+-        /**
+-         * Sends the component to the specified screen position of this player
+-         *
+-         * @param position the screen position
+-         * @param component the components to send
+-         * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-         */
+-        @Deprecated // Paper
+-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-        }
+-
+-        /**
+-         * Sends an array of components as a single message to the specified screen position of this player
+-         *
+-         * @param position the screen position
+-         * @param components the components to send
+-         * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-         */
+-        @Deprecated // Paper
+-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-        }
+-
+-        /**
+-         * Sends the component to the specified screen position of this player
+-         *
+-         * @param position the screen position
+-         * @param sender the sender of the message
+-         * @param component the components to send
+-         * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-         */
+-        @Deprecated // Paper
+-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @Nullable java.util.UUID sender, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-        }
+-
+-        /**
+-         * Sends an array of components as a single message to the specified screen position of this player
+-         *
+-         * @param position the screen position
+-         * @param sender the sender of the message
+-         * @param components the components to send
+-         * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
+-         */
+-        @Deprecated // Paper
+-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @Nullable java.util.UUID sender, @NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
+-            throw new UnsupportedOperationException("Not supported yet.");
+-
+-        }
+-
+-        // Paper start
+-        /**
+-         * @return the player's ping
+-         * @deprecated use {@link Player#getPing()}
+-         */
+-        @Deprecated
+-        public int getPing() {
+-            throw new UnsupportedOperationException( "Not supported yet." );
+-        }
+         // Paper end
+     }
+ 
+diff --git a/src/main/java/org/bukkit/plugin/messaging/PluginMessageRecipient.java b/src/main/java/org/bukkit/plugin/messaging/PluginMessageRecipient.java
+index b84b37fe27d84574dc5897285f1d9a1437bd322c..3026dd2de9e93985470ebdfa400f327de2babf9f 100644
+--- a/src/main/java/org/bukkit/plugin/messaging/PluginMessageRecipient.java
++++ b/src/main/java/org/bukkit/plugin/messaging/PluginMessageRecipient.java
+@@ -27,7 +27,7 @@ public interface PluginMessageRecipient {
+      * @throws ChannelNotRegisteredException Thrown if the channel is not
+      *     registered for this plugin.
+      */
+-    public void sendPluginMessage(@NotNull Plugin source, @NotNull String channel, @NotNull byte[] message);
++    void sendPluginMessage(@NotNull Plugin source, @NotNull String channel, byte @NotNull [] message);
+ 
+     /**
+      * Gets a set containing all the Plugin Channels that this client is
+@@ -36,5 +36,5 @@ public interface PluginMessageRecipient {
+      * @return Set containing all the channels that this client may accept.
+      */
+     @NotNull
+-    public Set<String> getListeningPluginChannels();
++    Set<String> getListeningPluginChannels();
+ }
+diff --git a/src/test/java/org/bukkit/conversations/FakeConversable.java b/src/test/java/org/bukkit/conversations/FakeConversable.java
+index 567bfd7d3e45d83b5520af6ddd0140c2b84139b2..bf7e63c51fc7a6a3129e9461b005b00ba5e31a21 100644
+--- a/src/test/java/org/bukkit/conversations/FakeConversable.java
++++ b/src/test/java/org/bukkit/conversations/FakeConversable.java
+@@ -24,24 +24,24 @@ public class FakeConversable implements Conversable {
+     }
+ 
+     @Override
+-    public void acceptConversationInput(String input) {
++    public void acceptConversationInput(@NotNull String input) {
+ 
+     }
+ 
+     @Override
+-    public boolean beginConversation(Conversation conversation) {
++    public boolean beginConversation(@NotNull Conversation conversation) {
+         begunConversation = conversation;
+         conversation.outputNextPrompt();
+         return true;
+     }
+ 
+     @Override
+-    public void abandonConversation(Conversation conversation) {
++    public void abandonConversation(@NotNull Conversation conversation) {
+         abandonedConverstion = conversation;
+     }
+ 
+     @Override
+-    public void abandonConversation(Conversation conversation, ConversationAbandonedEvent details) {
++    public void abandonConversation(@NotNull Conversation conversation, @NotNull ConversationAbandonedEvent details) {
+         abandonedConverstion = conversation;
+         abandonedConversationEvent = details;
+     }

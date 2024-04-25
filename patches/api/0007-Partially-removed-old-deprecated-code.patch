@@ -1,0 +1,259 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: devoirr <138160506+devoirr@users.noreply.github.com>
+Date: Thu, 25 Apr 2024 10:24:58 +0300
+Subject: [PATCH] Partially removed old deprecated code
+
+
+diff --git a/src/main/java/org/bukkit/attribute/Attribute.java b/src/main/java/org/bukkit/attribute/Attribute.java
+index 66027c2ea32d44a5d2df18d6414668d847f6fd9c..fc53d2e954735ee3d06899f60ad086e563961306 100644
+--- a/src/main/java/org/bukkit/attribute/Attribute.java
++++ b/src/main/java/org/bukkit/attribute/Attribute.java
+@@ -1,15 +1,15 @@
+ package org.bukkit.attribute;
+ 
++import net.kyori.adventure.translation.Translatable;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Keyed;
+ import org.bukkit.NamespacedKey;
+-import org.bukkit.Translatable;
+ import org.jetbrains.annotations.NotNull;
+ 
+ /**
+  * Types of attributes which may be present on an {@link Attributable}.
+  */
+-public enum Attribute implements Keyed, Translatable, net.kyori.adventure.translation.Translatable { // Paper - Adventure translations
++public enum Attribute implements Keyed, net.kyori.adventure.translation.Translatable { // Paper - Adventure translations
+ 
+     /**
+      * Maximum health of an Entity.
+@@ -70,7 +70,7 @@ public enum Attribute implements Keyed, Translatable, net.kyori.adventure.transl
+ 
+     private final NamespacedKey key;
+ 
+-    private Attribute(String key) {
++    Attribute(String key) {
+         this.key = NamespacedKey.minecraft(key);
+     }
+ 
+@@ -80,12 +80,6 @@ public enum Attribute implements Keyed, Translatable, net.kyori.adventure.transl
+         return key;
+     }
+ 
+-    @NotNull
+-    @Override
+-    public String getTranslationKey() {
+-        return Bukkit.getUnsafe().getTranslationKey(this);
+-    }
+-
+     // Paper start
+     @SuppressWarnings("deprecation")
+     @Override
+diff --git a/src/main/java/org/bukkit/ban/ProfileBanList.java b/src/main/java/org/bukkit/ban/ProfileBanList.java
+index 5248cf08ef83c7304dd76c42a2f646bb81e0efae..08ecf7b812231ff6de430554fb2b86620bce674c 100644
+--- a/src/main/java/org/bukkit/ban/ProfileBanList.java
++++ b/src/main/java/org/bukkit/ban/ProfileBanList.java
+@@ -3,7 +3,6 @@ package org.bukkit.ban;
+ import java.util.Date;
+ import org.bukkit.BanEntry;
+ import org.bukkit.BanList;
+-import org.bukkit.profile.PlayerProfile;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+@@ -12,59 +11,10 @@ import org.jetbrains.annotations.Nullable;
+  */
+ public interface ProfileBanList extends BanList<com.destroystokyo.paper.profile.PlayerProfile> { // Paper
+ 
+-    /**
+-     * {@inheritDoc}
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param expires date for the ban's expiration (unban), or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     * @throws IllegalArgumentException if ProfilePlayer has an invalid UUID
+-     * @deprecated use {@link #addBan(com.destroystokyo.paper.profile.PlayerProfile, String, Date, String)}
+-     */
+-    @Nullable
+-    // Paper start
+-    @Deprecated
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
+-
+     /**
+      * @throws IllegalArgumentException if ProfilePlayer has an invalid UUID
+      */
+     @Nullable BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(com.destroystokyo.paper.profile.@NotNull PlayerProfile target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
+ 
+-    // the 5 methods below are added to maintain compat for the bukkit.PlayerProfile parameter type
+-    /**
+-     * @deprecated use {@link #getBanEntry(Object)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E getBanEntry(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #isBanned(Object)}
+-     */
+-    @Deprecated
+-    boolean isBanned(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #pardon(Object)}
+-     */
+-    @Deprecated
+-    void pardon(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #addBan(Object, String, java.time.Instant, String)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable java.time.Instant expires, @Nullable String source);
+-
+-    /**
+-     * @deprecated use {@link #addBan(Object, String, java.time.Duration, String)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable java.time.Duration duration, @Nullable String source);
+-
+     // Paper end
+ }
+diff --git a/src/main/java/org/bukkit/block/banner/PatternType.java b/src/main/java/org/bukkit/block/banner/PatternType.java
+index 7cdcc70d1bc33c88b217638725713e9cde450bdb..a9bbf3e1fe01b2326f9cfeb1ac331e193df918ff 100644
+--- a/src/main/java/org/bukkit/block/banner/PatternType.java
++++ b/src/main/java/org/bukkit/block/banner/PatternType.java
+@@ -62,7 +62,7 @@ public enum PatternType implements Keyed {
+         }
+     }
+ 
+-    private PatternType(/*@NotNull*/ String identifier, String key) {
++    PatternType(/*@NotNull*/ String identifier, String key) {
+         this.identifier = identifier;
+         this.key = NamespacedKey.minecraft(key);
+     }
+diff --git a/src/main/java/org/bukkit/boss/DragonBattle.java b/src/main/java/org/bukkit/boss/DragonBattle.java
+index 5dbd12a786a66640ce80acafe2a42e35adef41eb..32720945c44eb3db02ee42b9715d3a48d34e4d0d 100644
+--- a/src/main/java/org/bukkit/boss/DragonBattle.java
++++ b/src/main/java/org/bukkit/boss/DragonBattle.java
+@@ -20,7 +20,7 @@ public interface DragonBattle {
+      * @return the ender dragon. null if dead
+      */
+     @Nullable
+-    public EnderDragon getEnderDragon();
++    EnderDragon getEnderDragon();
+ 
+     /**
+      * Get the boss bar to be displayed for this dragon battle.
+@@ -28,7 +28,7 @@ public interface DragonBattle {
+      * @return the boss bar
+      */
+     @NotNull
+-    public BossBar getBossBar();
++    BossBar getBossBar();
+ 
+     /**
+      * Get the location of the end portal.
+@@ -38,7 +38,7 @@ public interface DragonBattle {
+      * @return the end portal location or null if not generated
+      */
+     @Nullable
+-    public Location getEndPortalLocation();
++    Location getEndPortalLocation();
+ 
+     /**
+      * Generate the end portal.
+@@ -47,14 +47,14 @@ public interface DragonBattle {
+      *
+      * @return true if generated, false if already present
+      */
+-    public boolean generateEndPortal(boolean withPortals);
++    boolean generateEndPortal(boolean withPortals);
+ 
+     /**
+      * Check whether the first dragon has been killed already.
+      *
+      * @return true if killed before, false otherwise
+      */
+-    public boolean hasBeenPreviouslyKilled();
++    boolean hasBeenPreviouslyKilled();
+ 
+     /**
+      * Sets whether the first dragon has been killed already.
+@@ -65,13 +65,13 @@ public interface DragonBattle {
+      * @param previouslyKilled true if the dragon has been killed before, false
+      * otherwise
+      */
+-    public void setPreviouslyKilled(boolean previouslyKilled);
++    void setPreviouslyKilled(boolean previouslyKilled);
+ 
+     /**
+      * Try to initiate a respawn sequence to summon the dragon as though a player has
+      * placed 4 end crystals on the portal.
+      */
+-    public void initiateRespawn();
++    void initiateRespawn();
+ 
+     /**
+      * Try to initiate a respawn sequence to summon the dragon.
+@@ -83,7 +83,7 @@ public interface DragonBattle {
+      *
+      * @return true if the respawn was initiated, false otherwise.
+      */
+-    public boolean initiateRespawn(@Nullable Collection<EnderCrystal> enderCrystals);
++    boolean initiateRespawn(@Nullable Collection<EnderCrystal> enderCrystals);
+ 
+     /**
+      * Get this battle's current respawn phase.
+@@ -91,7 +91,7 @@ public interface DragonBattle {
+      * @return the current respawn phase.
+      */
+     @NotNull
+-    public RespawnPhase getRespawnPhase();
++    RespawnPhase getRespawnPhase();
+ 
+     /**
+      * Set the dragon's respawn phase.
+@@ -104,18 +104,18 @@ public interface DragonBattle {
+      *
+      * @see #initiateRespawn()
+      */
+-    public boolean setRespawnPhase(@NotNull RespawnPhase phase);
++    boolean setRespawnPhase(@NotNull RespawnPhase phase);
+ 
+     /**
+      * Reset the crystals located on the obsidian pillars (remove their beam
+      * targets and invulnerability).
+      */
+-    public void resetCrystals();
++    void resetCrystals();
+ 
+     /**
+      * Represents a phase in the dragon respawn process.
+      */
+-    public enum RespawnPhase {
++    enum RespawnPhase {
+ 
+         /**
+          * The crystal beams are directed upwards into the sky.
+@@ -143,7 +143,7 @@ public interface DragonBattle {
+         /**
+          * No respawn is in progress.
+          */
+-        NONE;
++        NONE
+     }
+     // Paper start
+     /**
+diff --git a/src/main/java/org/bukkit/command/RemoteConsoleCommandSender.java b/src/main/java/org/bukkit/command/RemoteConsoleCommandSender.java
+index 53656a9cbf505aa1a560be01de07b9d0e13a74e7..8f8fbb8f5b3effbbb8642313d6861379ed0500ae 100644
+--- a/src/main/java/org/bukkit/command/RemoteConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/command/RemoteConsoleCommandSender.java
+@@ -13,5 +13,5 @@ public interface RemoteConsoleCommandSender extends CommandSender {
+      */
+     @NotNull
+     @ApiStatus.Experimental
+-    public SocketAddress getAddress();
++    SocketAddress getAddress();
+ }

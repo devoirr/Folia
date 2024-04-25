@@ -1,0 +1,228 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: devoirr <138160506+devoirr@users.noreply.github.com>
+Date: Thu, 25 Apr 2024 10:28:15 +0300
+Subject: [PATCH] Removed more deprecated code
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java b/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java
+index 50ee7656580d386db473c054f5c5ec57bb2b1424..40fd396af2f44dd66a22d5cf726d2245ce65d966 100644
+--- a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java
++++ b/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java
+@@ -30,12 +30,6 @@ public class CraftProfileBanList implements ProfileBanList {
+         return this.getBanEntry(CraftProfileBanList.getProfile(target));
+     }
+ 
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(PlayerProfile target) { // Paper
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        return this.getBanEntry(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile()); // Paper
+-    }
+     // Paper start - fix ban list API
+     @Override
+     public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(final com.destroystokyo.paper.profile.PlayerProfile target) {
+@@ -82,26 +76,6 @@ public class CraftProfileBanList implements ProfileBanList {
+         return this.addBan(CraftProfileBanList.getProfileByName(target), reason, expires, source);
+     }
+ 
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Date expires, String source) { // Paper - fix ban list API
+-        Preconditions.checkArgument(target != null, "PlayerProfile cannot be null");
+-        Preconditions.checkArgument(target.getUniqueId() != null, "The PlayerProfile UUID cannot be null");
+-
+-        return this.addBan(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile(), reason, expires, source); // Paper
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Instant expires, String source) { // Paper - fix ban list API
+-        Date date = expires != null ? Date.from(expires) : null;
+-        return this.addBan(target, reason, date, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Duration duration, String source) { // Paper - fix ban list API
+-        Instant instant = duration != null ? Instant.now().plus(duration) : null;
+-        return this.addBan(target, reason, instant, source);
+-    }
+-
+     @Override
+     public Set<BanEntry> getBanEntries() {
+         ImmutableSet.Builder<BanEntry> builder = ImmutableSet.builder();
+@@ -124,11 +98,6 @@ public class CraftProfileBanList implements ProfileBanList {
+         return builder.build();
+     }
+ 
+-    @Override
+-    public boolean isBanned(PlayerProfile target) {
+-        // Paper start
+-        return this.isBanned((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+     private boolean isBanned(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
+         // Paper end
+         Preconditions.checkArgument(target != null, "Target cannot be null");
+@@ -143,11 +112,6 @@ public class CraftProfileBanList implements ProfileBanList {
+         return this.isBanned(CraftProfileBanList.getProfile(target));
+     }
+ 
+-    @Override
+-    public void pardon(PlayerProfile target) {
+-        // Paper start
+-        this.pardon((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+     private void pardon(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
+         // Paper end
+         Preconditions.checkArgument(target != null, "Target cannot be null");
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 0c468a1324996137eba5d1927d38a39859b705f0..ec4fea7e94f09e254c0d68d45ee96e60154f9eb1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -68,6 +68,7 @@ import org.bukkit.permissions.Permission;
+ import org.bukkit.permissions.PermissionAttachment;
+ import org.bukkit.permissions.PermissionAttachmentInfo;
+ import org.bukkit.plugin.Plugin;
++import org.jetbrains.annotations.NotNull;
+ 
+ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     private CraftInventoryPlayer inventory;
+@@ -84,7 +85,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public PlayerInventory getInventory() {
++    public @NotNull PlayerInventory getInventory() {
+         return this.inventory;
+     }
+ 
+@@ -94,12 +95,12 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public Inventory getEnderChest() {
++    public @NotNull Inventory getEnderChest() {
+         return this.enderChest;
+     }
+ 
+     @Override
+-    public MainHand getMainHand() {
++    public @NotNull MainHand getMainHand() {
+         return this.getHandle().getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT;
+     }
+ 
+@@ -114,7 +115,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public ItemStack getItemOnCursor() {
++    public @NotNull ItemStack getItemOnCursor() {
+         return CraftItemStack.asCraftMirror(this.getHandle().containerMenu.getCarried());
+     }
+ 
+@@ -210,7 +211,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public String getName() {
++    public @NotNull String getName() {
+         return this.getHandle().getScoreboardName();
+     }
+ 
+@@ -316,12 +317,12 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public InventoryView getOpenInventory() {
++    public @NotNull InventoryView getOpenInventory() {
+         return this.getHandle().containerMenu.getBukkitView();
+     }
+ 
+     @Override
+-    public InventoryView openInventory(Inventory inventory) {
++    public InventoryView openInventory(@NotNull Inventory inventory) {
+         if (!(this.getHandle() instanceof ServerPlayer)) return null;
+         ServerPlayer player = (ServerPlayer) this.getHandle();
+         AbstractContainerMenu formerContainer = this.getHandle().containerMenu;
+@@ -437,7 +438,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public void openInventory(InventoryView inventory) {
++    public void openInventory(@NotNull InventoryView inventory) {
+         if (!(this.getHandle() instanceof ServerPlayer)) return; // TODO: NPC support?
+         if (((ServerPlayer) this.getHandle()).connection == null) return;
+         if (this.getHandle().containerMenu != this.getHandle().inventoryMenu) {
+@@ -475,14 +476,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public InventoryView openMerchant(Villager villager, boolean force) {
++    public InventoryView openMerchant(@NotNull Villager villager, boolean force) {
+         Preconditions.checkNotNull(villager, "villager cannot be null");
+ 
+         return this.openMerchant((Merchant) villager, force);
+     }
+ 
+     @Override
+-    public InventoryView openMerchant(Merchant merchant, boolean force) {
++    public InventoryView openMerchant(@NotNull Merchant merchant, boolean force) {
+         Preconditions.checkNotNull(merchant, "merchant cannot be null");
+ 
+         if (!force && merchant.isTrading()) {
+@@ -600,7 +601,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public boolean setWindowProperty(InventoryView.Property prop, int value) {
++    public boolean setWindowProperty(InventoryView.@NotNull Property prop, int value) {
+         return false;
+     }
+ 
+@@ -692,17 +693,17 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     }
+ 
+     @Override
+-    public int undiscoverRecipes(Collection<NamespacedKey> recipes) {
++    public int undiscoverRecipes(@NotNull Collection<NamespacedKey> recipes) {
+         return this.getHandle().resetRecipes(this.bukkitKeysToMinecraftRecipes(recipes));
+     }
+ 
+     @Override
+-    public boolean hasDiscoveredRecipe(NamespacedKey recipe) {
++    public boolean hasDiscoveredRecipe(@NotNull NamespacedKey recipe) {
+         return false;
+     }
+ 
+     @Override
+-    public Set<NamespacedKey> getDiscoveredRecipes() {
++    public @NotNull Set<NamespacedKey> getDiscoveredRecipes() {
+         return ImmutableSet.of();
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index b0a70287ff1fc9b3d5eba322d949aaf510b165d2..cddde8a638ec43e453ee7df8b28e9f91d3f7e9b8 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1509,13 +1509,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
+-    public boolean hasDiscoveredRecipe(NamespacedKey recipe) {
++    public boolean hasDiscoveredRecipe(@NotNull NamespacedKey recipe) {
+         Preconditions.checkArgument(recipe != null, "recipe cannot be null");
+         return this.getHandle().getRecipeBook().contains(CraftNamespacedKey.toMinecraft(recipe));
+     }
+ 
+     @Override
+-    public Set<NamespacedKey> getDiscoveredRecipes() {
++    public @NotNull Set<NamespacedKey> getDiscoveredRecipes() {
+         ImmutableSet.Builder<NamespacedKey> bukkitRecipeKeys = ImmutableSet.builder();
+         this.getHandle().getRecipeBook().known.forEach(key -> bukkitRecipeKeys.add(CraftNamespacedKey.fromMinecraft(key)));
+         return bukkitRecipeKeys.build();
+@@ -2570,7 +2570,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
+-    public boolean setWindowProperty(Property prop, int value) {
++    public boolean setWindowProperty(@NotNull Property prop, int value) {
+         AbstractContainerMenu container = this.getHandle().containerMenu;
+         if (container.getBukkitView().getType() != prop.getType()) {
+             return false;
